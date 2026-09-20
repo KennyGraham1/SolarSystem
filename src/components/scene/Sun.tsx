@@ -4,17 +4,19 @@ import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { SUN, SUN_VISUAL_RADIUS, spinStep } from "@/lib/planets";
-import { makeBodyTexture, makeGlowTexture } from "@/lib/textures";
+import { makeGlowTexture } from "@/lib/textures";
 import { getTransform, useSolarStore } from "@/store/useSolarStore";
 import { Label } from "./Label";
+import { usePoleQuaternion } from "./Planet";
+import { BodyMesh } from "./BodyMesh";
 
 export function Sun() {
   const meshRef = useRef<THREE.Mesh>(null);
-  const texture = useMemo(() => makeBodyTexture("sun", "star", SUN.color, SUN.accent), []);
   const glow = useMemo(() => makeGlowTexture(), []);
   const showLabels = useSolarStore((s) => s.showLabels);
   const selected = useSolarStore((s) => s.selected);
   const select = useSolarStore((s) => s.select);
+  const pole = usePoleQuaternion(SUN.axialTiltDeg, SUN.poleLonDeg);
 
   useFrame((_, delta) => {
     const { speed, paused } = useSolarStore.getState();
@@ -27,20 +29,11 @@ export function Sun() {
   return (
     <group>
       <pointLight intensity={2.6} decay={0} color="#fff4dc" />
-      <mesh
-        ref={meshRef}
-        onClick={(e) => {
-          e.stopPropagation();
-          select("sun");
-        }}
-        onPointerOver={() => (document.body.style.cursor = "pointer")}
-        onPointerOut={() => (document.body.style.cursor = "auto")}
-      >
-        <sphereGeometry args={[SUN_VISUAL_RADIUS, 64, 64]} />
-        <meshBasicMaterial map={texture} toneMapped={false} />
-      </mesh>
-      <sprite scale={[SUN_VISUAL_RADIUS * 4.5, SUN_VISUAL_RADIUS * 4.5, 1]}>
-        <spriteMaterial map={glow} transparent blending={THREE.AdditiveBlending} depthWrite={false} />
+      <group quaternion={pole}>
+        <BodyMesh body={SUN} radius={SUN_VISUAL_RADIUS} meshRef={meshRef} onSelect={() => select("sun")} segments={64} sunBoost={1.7} />
+      </group>
+      <sprite scale={[SUN_VISUAL_RADIUS * 4.2, SUN_VISUAL_RADIUS * 4.2, 1]}>
+        <spriteMaterial map={glow} transparent opacity={0.8} blending={THREE.AdditiveBlending} depthWrite={false} />
       </sprite>
       {showLabels && selected !== "sun" && <Label text="Sun" y={SUN_VISUAL_RADIUS * 1.25} />}
     </group>

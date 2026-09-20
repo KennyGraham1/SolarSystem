@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { useSolarStore } from "@/store/useSolarStore";
+import { PlanetChips } from "./PlanetList";
 
 // Log-scale slider: 0..100 -> 0.1..1000 days per second
 const toSpeed = (v: number) => Math.pow(10, v / 25 - 1);
@@ -39,7 +40,7 @@ function SimDate() {
   if (!date) return null;
   const valid = date.getFullYear() >= 1800 && date.getFullYear() <= 2050;
   return (
-    <div className="flex items-center gap-2 text-xs">
+    <div className="flex flex-wrap items-center gap-2 text-xs">
       <span className="text-white/40">Date</span>
       <input
         type="date"
@@ -50,10 +51,10 @@ function SimDate() {
           const d = new Date(e.target.value + "T12:00:00");
           if (!Number.isNaN(d.getTime())) jumpToDate(d);
         }}
-        className="rounded bg-white/10 px-2 py-0.5 font-mono text-white/90 outline-none [color-scheme:dark]"
+        className="rounded-md border border-white/10 bg-white/8 px-2 py-0.5 font-mono text-white/90 outline-none transition focus:border-amber-300/50 [color-scheme:dark]"
         title="Planet positions are computed for this date (accurate 1800–2050)"
       />
-      <button onClick={() => jumpToDate(new Date())} className="rounded-md px-2 py-1 text-[11px] text-white/60 hover:bg-white/10 hover:text-white">
+      <button onClick={() => jumpToDate(new Date())} className="rounded-md px-2 py-1 text-[11px] text-white/60 transition hover:bg-white/10 hover:text-white">
         Today
       </button>
       {!valid && <span className="text-amber-300/80">positions approximate outside 1800–2050</span>}
@@ -65,8 +66,9 @@ function Toggle({ label, on, onClick }: { label: string; on: boolean; onClick: (
   return (
     <button
       onClick={onClick}
+      aria-pressed={on}
       className={`rounded-full border px-2.5 py-1 text-xs transition ${
-        on ? "border-white/30 bg-white/15 text-white" : "border-white/10 text-white/50 hover:text-white"
+        on ? "border-amber-300/40 bg-amber-300/15 text-amber-100" : "border-white/10 text-white/50 hover:border-white/20 hover:text-white"
       }`}
     >
       {label}
@@ -94,68 +96,71 @@ export function ControlBar() {
     return () => window.removeEventListener("keydown", onKey);
   }, [togglePaused, resetView]);
 
+  const sliderStyle = { "--fill": `${fromSpeed(speed)}%` } as CSSProperties;
+
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center p-4">
-      <div className="pointer-events-auto flex w-full max-w-3xl flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl border border-white/10 bg-black/50 px-4 py-3 backdrop-blur">
-        {view === "orbit" ? (
-          <>
-            <button
-              onClick={togglePaused}
-              aria-label={paused ? "Play" : "Pause"}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25"
-            >
-              {paused ? "▶" : "❚❚"}
-            </button>
-            <div className="flex min-w-[200px] flex-1 flex-col gap-1">
-              <div className="flex items-center justify-between text-xs text-white/60">
-                <span>Time speed</span>
-                <span className="font-mono text-white/80">{formatSpeed(speed)}</span>
+    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center p-3 sm:p-4">
+      <div className="glass animate-slide-up pointer-events-auto flex w-full max-w-3xl flex-col gap-2.5 rounded-2xl px-4 py-3">
+        <PlanetChips />
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          {view === "orbit" ? (
+            <>
+              <button
+                onClick={togglePaused}
+                aria-label={paused ? "Play" : "Pause"}
+                title="Space"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-300 text-sm text-black shadow-[0_0_18px_rgba(251,191,36,0.4)] transition hover:bg-amber-200"
+              >
+                {paused ? "▶" : "❚❚"}
+              </button>
+              <div className="flex min-w-[180px] flex-1 flex-col gap-1.5">
+                <div className="flex items-center justify-between text-xs text-white/60">
+                  <span>Time speed</span>
+                  <span className="font-mono text-white/80">{formatSpeed(speed)}</span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  step={0.5}
+                  value={fromSpeed(speed)}
+                  onChange={(e) => setSpeed(toSpeed(Number(e.target.value)))}
+                  style={sliderStyle}
+                  aria-label="Time speed"
+                />
               </div>
-              <input
-                type="range"
-                min={0}
-                max={100}
-                step={0.5}
-                value={fromSpeed(speed)}
-                onChange={(e) => setSpeed(toSpeed(Number(e.target.value)))}
-                className="accent-amber-300"
-              />
-            </div>
-            <div className="flex gap-1">
-              {PRESETS.map((p) => (
-                <button
-                  key={p.label}
-                  onClick={() => setSpeed(p.speed)}
-                  className="rounded-md px-2 py-1 text-[11px] text-white/60 transition hover:bg-white/10 hover:text-white"
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-            <div className="basis-full md:basis-auto">
-              <SimDate />
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              <Toggle label="Orbits" on={showOrbits} onClick={() => toggle("showOrbits")} />
+              <div className="flex gap-0.5">
+                {PRESETS.map((p) => (
+                  <button
+                    key={p.label}
+                    onClick={() => setSpeed(p.speed)}
+                    className={`rounded-md px-2 py-1 text-[11px] transition hover:bg-white/10 hover:text-white ${Math.abs(speed - p.speed) < 1e-6 ? "text-amber-200" : "text-white/60"}`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+              <div className="basis-full lg:basis-auto">
+                <SimDate />
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                <Toggle label="Orbits" on={showOrbits} onClick={() => toggle("showOrbits")} />
+                <Toggle label="Labels" on={showLabels} onClick={() => toggle("showLabels")} />
+                <Toggle label="True distances" on={trueDistances} onClick={() => toggle("trueDistances")} />
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="flex-1 text-xs text-white/70">
+                Every body is drawn at its <span className="text-white">true relative size</span> (Earth = 1). Click one to learn more.
+              </p>
               <Toggle label="Labels" on={showLabels} onClick={() => toggle("showLabels")} />
-              <Toggle label="True distances" on={trueDistances} onClick={() => toggle("trueDistances")} />
-            </div>
-          </>
-        ) : (
-          <>
-            <p className="flex-1 text-xs text-white/70">
-              Every body is drawn at its <span className="text-white">true relative size</span> (Earth = 1). Click one to learn more.
-            </p>
-            <Toggle label="Labels" on={showLabels} onClick={() => toggle("showLabels")} />
-          </>
-        )}
-        <button
-          onClick={resetView}
-          className="rounded-full border border-white/10 px-2.5 py-1 text-xs text-white/60 transition hover:text-white"
-          title="Esc"
-        >
-          Reset view
-        </button>
+            </>
+          )}
+          <button onClick={resetView} className="rounded-full border border-white/10 px-2.5 py-1 text-xs text-white/60 transition hover:border-white/25 hover:text-white" title="Esc">
+            Reset view
+          </button>
+        </div>
       </div>
     </div>
   );

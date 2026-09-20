@@ -21,21 +21,32 @@ Open http://localhost:3000.
 - **Size comparison** – every body lined up at its true relative size.
 - **Quiz** – 8 randomly generated questions built from the planet data.
 - **Esc** resets the camera.
+- **Planet pages** – every body has a dedicated page at `/planet/<id>` (e.g. `/planet/saturn`) with a spinning 3D hero, an interactive interior cross-section, comparison bars against Earth, notable moons, an exploration timeline, a per-planet quiz, a glossary and sources. Reach them from the info panel, the planet list or the tour card.
 
 ## Notes on accuracy
 
-- Physical data (radius, orbital period, rotation period, tilt, gravity, moon counts, temperatures) come from NASA planetary fact sheets.
+- Physical data (radius, orbital period, rotation period, tilt, gravity, temperatures) come from NASA planetary fact sheets. Moon counts are as of August 2026 per NASA (Jupiter 115, Saturn 293, Uranus 29, Neptune 16) and keep growing.
+- Rotation axes lean in their real directions (from IAU pole coordinates), so Earth's northern hemisphere really does face the Sun in June. Bodies always spin right-handed about their own axis; Venus and Uranus are retrograde purely because their obliquity exceeds 90°.
+- The Moon is drawn much closer to Earth than reality (2.6 Earth radii instead of 60) and its 5° orbital inclination is ignored; it is tidally locked as in reality.
 - In the default orbit view, planet **sizes** are square-root scaled and **distances** are log-compressed so everything fits on screen. Turn on *True distances* or open *Size comparison* for accurate proportions.
 - Orbits and positions use the JPL approximate Keplerian elements, good to a fraction of a degree between 1800 and 2050. Outside that range they degrade gracefully but are no longer accurate.
 - Planet spin is capped at ¼ turn per second for readability when the clock runs fast; orbital motion is always exact.
-- Planet surfaces are procedurally generated textures, not photographs.
+- Planet surfaces use 2K photographic texture maps where available (see credits); if a texture file is missing or fails to load, the app falls back to a procedurally generated surface for that body.
 
 ## Structure
 
 - `src/lib/planets.ts` – all body data, tour lessons and the scene scaling helpers
 - `src/lib/orbits.ts` – Keplerian position calculator (JPL elements), orbital speed, light time
 - `src/lib/textures.ts` – procedural canvas textures (surfaces, rings, sun glow)
+- `src/lib/textureLoader.ts` – loads the photographic textures with the procedural ones as fallback
+- `src/lib/content/` – long-form educational content for the planet pages
+- `src/app/planet/[id]/` – statically generated planet pages; `src/components/planet/` – their sections
 - `src/lib/quiz.ts` – question generators
 - `src/store/useSolarStore.ts` – zustand store for UI/simulation state
 - `src/components/scene/` – React Three Fiber scene (Sun, planets, camera rig, comparison view)
 - `src/components/ui/` – header, planet list, controls, info panel, quiz
+
+## Credits
+
+- Textures: [Solar System Scope](https://www.solarsystemscope.com/textures/), CC BY 4.0 (files in `public/textures/`).
+- Physical data: NASA planetary fact sheets; orbital elements: JPL.

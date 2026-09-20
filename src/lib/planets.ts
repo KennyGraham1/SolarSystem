@@ -22,9 +22,14 @@ export interface Body {
   distanceAU: number;
   /** Sidereal orbital period in Earth days (0 for the Sun). */
   orbitalPeriodDays: number;
-  /** Sidereal rotation period in Earth days. Negative = retrograde spin. */
+  /** Sidereal rotation period in Earth days. Negative marks retrograde spin
+   *  for display only; the sim always spins right-handed about the tilted axis,
+   *  which is retrograde exactly when the obliquity exceeds 90°. */
   rotationPeriodDays: number;
+  /** Obliquity: angle between the rotation axis (right-hand rule) and the orbit normal. */
   axialTiltDeg: number;
+  /** Ecliptic longitude toward which the rotation pole leans (from IAU pole RA/Dec). */
+  poleLonDeg: number;
   moons: number;
   gravity: number;
   meanTempC: number;
@@ -49,6 +54,7 @@ export const BODIES: Body[] = [
     orbitalPeriodDays: 0,
     rotationPeriodDays: 25.4,
     axialTiltDeg: 7.25,
+    poleLonDeg: 166,
     moons: 0,
     gravity: 274,
     meanTempC: 5505,
@@ -61,7 +67,7 @@ export const BODIES: Body[] = [
       "The Sun is about 4.6 billion years old and roughly halfway through its life.",
     ],
     lesson:
-      "Everything here orbits the Sun because it holds 99.8% of the system's mass. Watch the planets: the closer they are, the faster they move. That is Kepler's third law — the Sun's gravity is stronger up close, so inner planets must move faster to stay in orbit.",
+      "Everything here orbits the Sun because it holds 99.8% of the system's mass. Watch the planets: the closer they are, the faster they move, because the Sun's gravity is stronger up close. Kepler's third law puts a number on it — a planet 4 times farther out takes 8 times longer to go round.",
   },
   {
     id: "mercury",
@@ -75,6 +81,7 @@ export const BODIES: Body[] = [
     orbitalPeriodDays: 87.97,
     rotationPeriodDays: 58.65,
     axialTiltDeg: 0.03,
+    poleLonDeg: 0,
     moons: 0,
     gravity: 3.7,
     meanTempC: 167,
@@ -87,7 +94,7 @@ export const BODIES: Body[] = [
       "Its heavily cratered surface looks a lot like our Moon.",
     ],
     lesson:
-      "Look at Mercury's orbit — it is visibly off-centre. Its path is the most elliptical of the planets, so it speeds up near the Sun and slows down far away. Speed the clock up to 1 mo/s and you will see it lap Earth four times a year.",
+      "Look at Mercury's orbit — it is visibly off-centre. Its path is the most elliptical of the planets, so it speeds up near the Sun and slows down far away. Speed the clock up to 1 mo/s and you will see it circle the Sun four times for every one Earth orbit.",
   },
   {
     id: "venus",
@@ -101,6 +108,7 @@ export const BODIES: Body[] = [
     orbitalPeriodDays: 224.7,
     rotationPeriodDays: -243.0,
     axialTiltDeg: 177.4,
+    poleLonDeg: 209,
     moons: 0,
     gravity: 8.87,
     meanTempC: 464,
@@ -127,6 +135,7 @@ export const BODIES: Body[] = [
     orbitalPeriodDays: 365.25,
     rotationPeriodDays: 0.9973,
     axialTiltDeg: 23.44,
+    poleLonDeg: 90, // north pole faces the Sun at the June solstice
     moons: 1,
     gravity: 9.81,
     meanTempC: 15,
@@ -153,6 +162,7 @@ export const BODIES: Body[] = [
     orbitalPeriodDays: 686.98,
     rotationPeriodDays: 1.026,
     axialTiltDeg: 25.19,
+    poleLonDeg: 353,
     moons: 2,
     gravity: 3.71,
     meanTempC: -65,
@@ -160,7 +170,7 @@ export const BODIES: Body[] = [
     description:
       "The Red Planet, coloured by iron oxide dust. It has polar ice caps, ancient river valleys, and the tallest volcano in the solar system, Olympus Mons.",
     facts: [
-      "Olympus Mons is about 22 km high — nearly three times the height of Mount Everest.",
+      "Olympus Mons is about 22 km high — two and a half times the height of Mount Everest.",
       "A Martian day (a 'sol') is only 40 minutes longer than an Earth day.",
       "Its two tiny moons, Phobos and Deimos, may be captured asteroids.",
     ],
@@ -179,7 +189,8 @@ export const BODIES: Body[] = [
     orbitalPeriodDays: 4_332.6,
     rotationPeriodDays: 0.4135,
     axialTiltDeg: 3.13,
-    moons: 95,
+    poleLonDeg: 248,
+    moons: 115,
     gravity: 24.79,
     meanTempC: -110,
     massEarths: 317.8,
@@ -187,11 +198,11 @@ export const BODIES: Body[] = [
       "The largest planet — more than twice as massive as all the other planets combined. Its swirling bands of clouds host the Great Red Spot, a storm bigger than Earth.",
     facts: [
       "Jupiter has the shortest day of any planet: under 10 hours.",
-      "The Great Red Spot has been raging for at least 350 years.",
+      "The Great Red Spot has been watched continuously since 1831, and a similar spot was sketched in the 1660s.",
       "Its moon Ganymede is larger than the planet Mercury.",
     ],
     lesson:
-      "Jupiter is the giant: 11 Earths wide and spinning so fast its day is under 10 hours. The bands are clouds moving in opposite directions, and the Great Red Spot is a storm larger than Earth that has raged for centuries.",
+      "Jupiter is the giant: 11 Earths wide and spinning so fast its day is under 10 hours. The bands are clouds moving in opposite directions, and the Great Red Spot is a storm larger than Earth that has been observed for nearly two centuries.",
   },
   {
     id: "saturn",
@@ -205,7 +216,8 @@ export const BODIES: Body[] = [
     orbitalPeriodDays: 10_759,
     rotationPeriodDays: 0.444,
     axialTiltDeg: 26.73,
-    moons: 146,
+    poleLonDeg: 80,
+    moons: 293,
     gravity: 10.44,
     meanTempC: -140,
     massEarths: 95.2,
@@ -232,7 +244,8 @@ export const BODIES: Body[] = [
     orbitalPeriodDays: 30_687,
     rotationPeriodDays: -0.718,
     axialTiltDeg: 97.77,
-    moons: 28,
+    poleLonDeg: 78,
+    moons: 29,
     gravity: 8.87,
     meanTempC: -195,
     massEarths: 14.5,
@@ -241,7 +254,7 @@ export const BODIES: Body[] = [
     facts: [
       "Each pole gets 42 years of continuous sunlight followed by 42 years of darkness.",
       "It has the coldest atmosphere of any planet, reaching −224 °C.",
-      "Uranus has 13 faint rings and was the first planet discovered with a telescope (1781).",
+      "Uranus has 13 faint rings and was the first planet discovered with a telescope, by William Herschel in 1781.",
     ],
     lesson:
       "Uranus is knocked on its side, with a 98° tilt. It rolls around the Sun, so each pole gets 42 years of daylight and 42 years of night. Its cyan colour comes from methane, which absorbs red light.",
@@ -259,6 +272,7 @@ export const BODIES: Body[] = [
     orbitalPeriodDays: 60_190,
     rotationPeriodDays: 0.671,
     axialTiltDeg: 28.32,
+    poleLonDeg: 319,
     moons: 16,
     gravity: 11.15,
     meanTempC: -200,
@@ -308,10 +322,21 @@ export function orbitRadius(au: number, trueDistances: boolean) {
  *  capped so a fast clock doesn't turn planets into a blur. */
 export const MAX_SPIN_REV_PER_SEC = 0.25;
 
-/** Spin increment (radians) for this frame, honouring direction and the cap. */
+/** Spin increment (radians) for this frame. Always right-handed about the body's
+ *  own axis; retrograde rotation comes from an obliquity greater than 90°. */
 export function spinStep(rotationPeriodDays: number, speed: number, delta: number) {
   const revPerSec = Math.min(speed / Math.abs(rotationPeriodDays), MAX_SPIN_REV_PER_SEC);
-  return Math.sign(rotationPeriodDays) * revPerSec * Math.PI * 2 * delta;
+  return revPerSec * Math.PI * 2 * delta;
+}
+
+/**
+ * Direction of the rotation pole in scene coordinates (x = ecliptic x,
+ * y = ecliptic north, z = −ecliptic y) from obliquity and pole longitude.
+ */
+export function poleDirection(obliquityDeg: number, poleLonDeg: number): [number, number, number] {
+  const lat = ((90 - obliquityDeg) * Math.PI) / 180;
+  const lon = (poleLonDeg * Math.PI) / 180;
+  return [Math.cos(lat) * Math.cos(lon), Math.sin(lat), -Math.cos(lat) * Math.sin(lon)];
 }
 
 export function formatPeriod(days: number) {

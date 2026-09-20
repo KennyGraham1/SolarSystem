@@ -7,19 +7,16 @@ import { ControlBar } from "./ui/ControlBar";
 import { InfoPanel } from "./ui/InfoPanel";
 import { Quiz } from "./ui/Quiz";
 import { Tour } from "./ui/Tour";
+import { LoadingScreen } from "./ui/LoadingScreen";
 
 // WebGL only exists in the browser, so the scene must skip server rendering.
-const SolarScene = dynamic(() => import("./scene/SolarScene"), {
-  ssr: false,
-  loading: () => (
-    <div className="flex h-full w-full items-center justify-center text-sm text-white/50">Loading the solar system…</div>
-  ),
-});
+const SolarScene = dynamic(() => import("./scene/SolarScene"), { ssr: false, loading: () => null });
 
 export function App() {
   return (
     <main className="relative h-dvh w-full overflow-hidden bg-[#03050c]">
       <SolarScene />
+      <LoadingScreen />
       <Header />
       <PlanetList />
       <InfoPanel />

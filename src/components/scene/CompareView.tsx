@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { BODIES, type Body } from "@/lib/planets";
-import { makeBodyTexture, makeRingTexture } from "@/lib/textures";
 import { getTransform, useSolarStore } from "@/store/useSolarStore";
 import { Label } from "./Label";
+import { usePoleQuaternion } from "./Planet";
+import { BodyMesh } from "./BodyMesh";
 
 const EARTH_UNIT = 0.5; // Earth radius in scene units for the lineup
 
@@ -41,16 +42,11 @@ export function CompareView() {
 
 function CompareBody({ body, radius, x }: { body: Body; radius: number; x: number }) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const texture = useMemo(() => makeBodyTexture(body.id, body.texture, body.color, body.accent), [body]);
-  const ringTexture = useMemo(
-    () => (body.rings ? makeRingTexture(body.id, body.rings.color, body.rings.inner / body.rings.outer) : null),
-    [body],
-  );
   const showLabels = useSolarStore((s) => s.showLabels);
   const selected = useSolarStore((s) => s.selected);
   const select = useSolarStore((s) => s.select);
   const isStar = body.id === "sun";
-  const tilt = THREE.MathUtils.degToRad(body.axialTiltDeg);
+  const pole = usePoleQuaternion(body.axialTiltDeg, body.poleLonDeg);
 
   useFrame((_, delta) => {
     if (meshRef.current) meshRef.current.rotation.y += delta * 0.15;
@@ -60,33 +56,12 @@ function CompareBody({ body, radius, x }: { body: Body; radius: number; x: numbe
   });
 
   const ratio = body.radiusKm / 6_371;
-  const sub = isStar ? `${Math.round(ratio)}× Earth` : ratio >= 1 ? `${ratio.toFixed(1)}× Earth` : `${ratio.toFixed(2)}× Earth`;
+  const sub = `${isStar ? Math.round(ratio) : ratio >= 1 ? ratio.toFixed(1) : ratio.toFixed(2)}× Earth wide`;
 
   return (
     <group position={[x, 0, 0]}>
-      <group rotation={[0, 0, tilt]}>
-        <mesh
-          ref={meshRef}
-          onClick={(e) => {
-            e.stopPropagation();
-            select(body.id);
-          }}
-          onPointerOver={() => (document.body.style.cursor = "pointer")}
-          onPointerOut={() => (document.body.style.cursor = "auto")}
-        >
-          <sphereGeometry args={[radius, 64, 64]} />
-          {isStar ? (
-            <meshBasicMaterial map={texture} toneMapped={false} />
-          ) : (
-            <meshStandardMaterial map={texture} roughness={0.85} />
-          )}
-        </mesh>
-        {body.rings && ringTexture && (
-          <mesh rotation={[-Math.PI / 2, 0, 0]}>
-            <ringGeometry args={[radius * body.rings.inner, radius * body.rings.outer, 128]} />
-            <meshBasicMaterial map={ringTexture} transparent opacity={body.rings.opacity} side={THREE.DoubleSide} depthWrite={false} />
-          </mesh>
-        )}
+      <group quaternion={pole}>
+        <BodyMesh body={body} radius={radius} meshRef={meshRef} onSelect={() => select(body.id)} segments={64} sunBoost={1.7} />
       </group>
       {showLabels && (
         <Label text={body.name} sub={sub} y={radius * (body.rings ? 1.7 : 1.35) + 0.7} active={selected === body.id} />

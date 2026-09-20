@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { BODIES } from "@/lib/planets";
 import { useSolarStore } from "@/store/useSolarStore";
 
@@ -33,42 +34,40 @@ export function Tour() {
   const last = step === BODIES.length - 1;
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-20 z-20 flex justify-center px-4 md:top-24">
-      <div className="pointer-events-auto w-full max-w-xl rounded-2xl border border-amber-300/20 bg-black/65 p-4 backdrop-blur">
-        <div className="mb-1 flex items-center justify-between text-[11px] uppercase tracking-wider text-amber-200/80">
+    <div className="pointer-events-none absolute inset-x-0 top-16 z-20 flex justify-center px-3 sm:top-20 sm:px-4 md:top-24">
+      <div key={step} className="glass-strong animate-drift-down pointer-events-auto w-full max-w-xl rounded-2xl border-amber-300/25 p-4 sm:p-5">
+        <div className="mb-1.5 flex items-center justify-between text-[11px] uppercase tracking-[0.14em] text-amber-200/80">
           <span>
             Guided tour · {step + 1} / {BODIES.length}
           </span>
-          <button onClick={() => setTourStep(null)} className="text-white/50 hover:text-white">
+          <button onClick={() => setTourStep(null)} className="normal-case tracking-normal text-white/50 transition hover:text-white">
             End tour
           </button>
         </div>
-        <h3 className="mb-1 text-lg font-semibold text-white">{body.name}</h3>
+        <h3 className="font-display mb-1 text-xl font-semibold tracking-tight text-white">{body.name}</h3>
         <p className="text-sm leading-relaxed text-white/85">{body.lesson}</p>
-        <div className="mt-3 flex items-center justify-between">
-          <button
-            onClick={() => setTourStep(step - 1)}
-            disabled={step === 0}
-            className="rounded-full px-3 py-1 text-xs text-white/70 hover:text-white disabled:opacity-30"
-          >
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+          <button onClick={() => setTourStep(step - 1)} disabled={step === 0} className="btn-ghost !px-3 !py-1 text-xs">
             ← Back
           </button>
-          <div className="flex gap-1">
+          <div className="flex items-center gap-1.5" aria-hidden>
             {BODIES.map((b, i) => (
               <button
                 key={b.id}
                 onClick={() => setTourStep(i)}
                 aria-label={b.name}
-                className={`h-1.5 w-1.5 rounded-full ${i === step ? "bg-amber-300" : "bg-white/25"}`}
+                className={`rounded-full transition-all ${i === step ? "h-1.5 w-4 bg-amber-300" : "h-1.5 w-1.5 bg-white/25 hover:bg-white/50"}`}
               />
             ))}
           </div>
-          <button
-            onClick={() => (last ? setTourStep(null) : setTourStep(step + 1))}
-            className="rounded-full bg-amber-400/20 px-3 py-1 text-xs text-amber-200 hover:bg-amber-400/30"
-          >
-            {last ? "Finish" : "Next →"}
-          </button>
+          <div className="flex items-center gap-2">
+            <Link href={`/planet/${body.id}`} className="text-xs text-white/60 underline-offset-4 transition hover:text-amber-200 hover:underline">
+              Read more ↗
+            </Link>
+            <button onClick={() => (last ? setTourStep(null) : setTourStep(step + 1))} className="btn-accent !px-3 !py-1 text-xs">
+              {last ? "Finish" : "Next →"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -1,74 +1,93 @@
 "use client";
 
-import { bodyById, formatKm, formatPeriod } from "@/lib/planets";
-import { lightTimeSeconds, orbitalSpeedKmS } from "@/lib/orbits";
+import { useState } from "react";
+import Link from "next/link";
+import { bodyById, type Body } from "@/lib/planets";
+import { bodyStats } from "@/lib/format";
 import { useSolarStore } from "@/store/useSolarStore";
 import { YouOnPlanet } from "./YouOnPlanet";
+import { bodyDot } from "./PlanetList";
 
-function formatLightTime(seconds: number) {
-  if (seconds < 3600) return `${(seconds / 60).toFixed(1)} min`;
-  return `${(seconds / 3600).toFixed(1)} hours`;
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
     <div className="rounded-lg bg-white/5 px-3 py-2">
       <div className="text-[10px] uppercase tracking-wider text-white/40">{label}</div>
       <div className="text-sm text-white">{value}</div>
+      {hint && <div className="text-[10px] text-white/40">{hint}</div>}
     </div>
   );
 }
 
 export function InfoPanel() {
   const selected = useSolarStore((s) => s.selected);
-  const select = useSolarStore((s) => s.select);
   if (!selected) return null;
-  const b = bodyById(selected);
-  const isSun = b.id === "sun";
-  const retro = b.rotationPeriodDays < 0;
+  // Keyed so the sheet state and animations restart for each body.
+  return <Panel key={selected} body={bodyById(selected)} />;
+}
+
+function Panel({ body: b }: { body: Body }) {
+  const select = useSolarStore((s) => s.select);
+  // Mobile bottom sheet: peek (header only) or expanded.
+  const [expanded, setExpanded] = useState(false);
+  const stats = bodyStats(b);
 
   return (
-    <aside className="absolute inset-x-4 bottom-24 z-20 max-h-[55vh] overflow-y-auto rounded-2xl border border-white/10 bg-black/60 p-5 backdrop-blur md:inset-x-auto md:right-4 md:top-20 md:bottom-28 md:w-80 md:max-h-none">
-      <div className="mb-3 flex items-start justify-between gap-3">
-        <div>
-          <div className="text-[11px] uppercase tracking-wider text-white/40">{b.type}</div>
-          <h2 className="flex items-center gap-2 text-2xl font-semibold text-white">
-            <span className="h-3 w-3 rounded-full" style={{ background: b.color, boxShadow: `0 0 10px ${b.color}` }} />
-            {b.name}
-          </h2>
+    <aside
+      aria-label={`${b.name} facts`}
+      className={`glass-strong animate-slide-up md:animate-slide-in-right scroll-thin absolute inset-x-0 bottom-0 z-30 flex flex-col rounded-t-3xl !bg-[#090c18] md:!bg-[var(--panel-strong)] transition-[max-height] duration-300 md:inset-x-auto md:bottom-28 md:right-4 md:top-20 md:z-20 md:w-[22rem] md:max-h-none md:rounded-2xl ${
+        expanded ? "max-h-[78dvh]" : "max-h-[11.5rem]"
+      }`}
+    >
+      {/* drag handle (mobile) */}
+      <button
+        onClick={() => setExpanded((e) => !e)}
+        aria-expanded={expanded}
+        aria-label={expanded ? "Collapse details" : "Expand details"}
+        className="flex w-full justify-center pt-2.5 pb-1 md:hidden"
+      >
+        <span className="h-1 w-10 rounded-full bg-white/25" />
+      </button>
+
+      <div className="overflow-y-auto px-5 pb-5 pt-2 md:pt-5">
+        <div className="mb-3 flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="eyebrow">{b.type}</div>
+            <h2 className="font-display flex items-center gap-2.5 text-2xl font-semibold tracking-tight text-white">
+              <span className="h-3.5 w-3.5 shrink-0 rounded-full" style={bodyDot(b)} />
+              <Link href={`/planet/${b.id}`} className="truncate transition hover:text-amber-200" title={`Open the ${b.name} page`}>
+                {b.name}
+              </Link>
+            </h2>
+          </div>
+          <button onClick={() => select(null)} aria-label="Close" className="rounded-full px-2 py-1 text-white/50 transition hover:bg-white/10 hover:text-white">
+            ✕
+          </button>
         </div>
-        <button onClick={() => select(null)} aria-label="Close" className="rounded-full px-2 text-white/50 hover:text-white">
-          ✕
-        </button>
+
+        <Link href={`/planet/${b.id}`} className="btn-accent mb-4 w-full justify-center">
+          Explore {b.name} in depth →
+        </Link>
+
+        <p className="mb-4 text-sm leading-relaxed text-white/80">{b.description}</p>
+
+        <div className="mb-4 grid grid-cols-2 gap-2">
+          {stats.map((s) => (
+            <Stat key={s.label} label={s.label} value={s.value} hint={s.hint} />
+          ))}
+        </div>
+
+        <h3 className="eyebrow mb-1.5">Did you know?</h3>
+        <ul className="space-y-1.5 text-sm text-white/75">
+          {b.facts.map((f) => (
+            <li key={f} className="flex gap-2">
+              <span className="text-amber-300">•</span>
+              <span>{f}</span>
+            </li>
+          ))}
+        </ul>
+
+        <YouOnPlanet key={b.id} body={b} />
       </div>
-
-      <p className="mb-4 text-sm leading-relaxed text-white/80">{b.description}</p>
-
-      <div className="mb-4 grid grid-cols-2 gap-2">
-        <Stat label="Radius" value={formatKm(b.radiusKm)} />
-        <Stat label="Mass" value={isSun ? "333,000 × Earth" : `${b.massEarths} × Earth`} />
-        {!isSun && <Stat label="Distance from Sun" value={`${b.distanceAU} AU`} />}
-        {!isSun && <Stat label="Year length" value={formatPeriod(b.orbitalPeriodDays)} />}
-        <Stat label="Day length" value={`${formatPeriod(b.rotationPeriodDays)}${retro ? " (retrograde)" : ""}`} />
-        <Stat label="Axial tilt" value={`${b.axialTiltDeg}°`} />
-        <Stat label="Gravity" value={`${b.gravity} m/s²`} />
-        <Stat label="Mean temp." value={`${b.meanTempC.toLocaleString("en-US")} °C`} />
-        {!isSun && <Stat label="Moons" value={String(b.moons)} />}
-        {!isSun && <Stat label="Orbital speed" value={`${orbitalSpeedKmS(b.distanceAU, b.orbitalPeriodDays).toFixed(1)} km/s`} />}
-        {!isSun && <Stat label="Sunlight takes" value={formatLightTime(lightTimeSeconds(b.distanceAU))} />}
-      </div>
-
-      <h3 className="mb-1.5 text-[11px] uppercase tracking-wider text-white/40">Did you know?</h3>
-      <ul className="space-y-1.5 text-sm text-white/75">
-        {b.facts.map((f) => (
-          <li key={f} className="flex gap-2">
-            <span className="text-amber-300">•</span>
-            <span>{f}</span>
-          </li>
-        ))}
-      </ul>
-
-      <YouOnPlanet key={b.id} body={b} />
     </aside>
   );
 }

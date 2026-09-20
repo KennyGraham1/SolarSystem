@@ -41,7 +41,7 @@ const generators: Array<() => Question> = [
   },
   () => {
     const p = pick(PLANETS.filter((b) => b.moons > 1), 1)[0];
-    return withOptions(`Which planet has ${p.moons} known moons?`, p, PLANETS.filter((b) => b.moons !== p.moons), `${p.name} has ${p.moons} confirmed moons.`);
+    return withOptions(`Which planet has ${p.moons} known moons?`, p, PLANETS.filter((b) => b.moons !== p.moons), `${p.name} has ${p.moons} known moons as of 2025 — the count keeps rising as surveys find more.`);
   },
   () => {
     const four = pick(PLANETS, 4);
@@ -68,7 +68,9 @@ const generators: Array<() => Question> = [
     };
   },
   () => {
-    const four = pick(PLANETS, 4);
+    // Uranus has the coldest *recorded* temperature while Neptune has the lower mean;
+    // keep them apart so the question has one defensible answer.
+    const four = pick(PLANETS.filter((p) => p.id !== "uranus"), 4);
     const coldest = four.reduce((a, b) => (a.meanTempC < b.meanTempC ? a : b));
     return {
       prompt: "Which of these planets has the lowest average temperature?",
@@ -109,8 +111,8 @@ const generators: Array<() => Question> = [
     return withOptions("Which of these planets has a ring system?", p, PLANETS.filter((b) => !b.rings), `${p.name} has rings. All four giant planets do, but Saturn's are by far the most prominent.`);
   },
   () => {
-    const p = pick(PLANETS.filter((b) => b.axialTiltDeg > 90), 1)[0];
-    return withOptions("Which planet is tilted so far that it rolls around the Sun on its side?", p, PLANETS.filter((b) => b.axialTiltDeg < 90), `${p.name} has an axial tilt of ${p.axialTiltDeg}°.`);
+    const p = PLANETS.find((b) => b.id === "uranus")!;
+    return withOptions("Which planet is tilted so far that it rolls around the Sun on its side?", p, PLANETS.filter((b) => b.id !== "venus"), `${p.name} has an axial tilt of ${p.axialTiltDeg}°. (Venus is tilted 177°, which means it is upside down rather than on its side.)`);
   },
 ];
 

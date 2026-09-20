@@ -12,7 +12,31 @@ export function Quiz() {
 }
 
 function QuizDialog({ onClose }: { onClose: () => void }) {
-  const [questions, setQuestions] = useState<Question[]>(() => makeQuiz());
+  return (
+    <div className="animate-fade-in absolute inset-0 z-30 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className="glass-strong animate-pop-in w-full max-w-lg rounded-2xl p-6 text-white"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-label="Solar System Quiz"
+      >
+        <QuizRunner title="Solar System Quiz" questions={makeQuiz()} regenerate={makeQuiz} onClose={onClose} />
+      </div>
+    </div>
+  );
+}
+
+interface RunnerProps {
+  title: string;
+  questions: Question[];
+  /** Produces a fresh set for "Play again" (defaults to the same questions). */
+  regenerate?: () => Question[];
+  onClose?: () => void;
+}
+
+/** The question-by-question quiz flow, shared by the modal and the planet pages. */
+export function QuizRunner({ title, questions: initial, regenerate, onClose }: RunnerProps) {
+  const [questions, setQuestions] = useState<Question[]>(initial);
   const [index, setIndex] = useState(0);
   const [choice, setChoice] = useState<string | null>(null);
   const [score, setScore] = useState(0);
@@ -32,73 +56,87 @@ function QuizDialog({ onClose }: { onClose: () => void }) {
   };
 
   const restart = () => {
-    setQuestions(makeQuiz());
+    setQuestions(regenerate ? regenerate() : initial);
     setIndex(0);
     setChoice(null);
     setScore(0);
   };
 
   return (
-    <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={onClose}>
-      <div
-        className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#0b1020] p-6 text-white shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Solar System Quiz</h2>
+    <>
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h2 className="font-display text-lg font-semibold tracking-tight">{title}</h2>
+        <div className="flex items-center gap-3">
           <div className="text-xs text-white/50">
             {finished ? "Done" : `Question ${index + 1} / ${questions.length}`} · Score {score}
           </div>
+          {onClose && (
+            <button onClick={onClose} aria-label="Close" className="rounded-full px-2 text-white/50 transition hover:text-white">
+              ✕
+            </button>
+          )}
         </div>
+      </div>
 
-        {finished ? (
-          <div className="text-center">
-            <div className="text-5xl font-semibold text-amber-200">
-              {score} / {questions.length}
-            </div>
-            <p className="mt-2 text-sm text-white/70">
-              {score === questions.length ? "Perfect — you know the solar system!" : score >= questions.length / 2 ? "Nice work. Explore the planets and try again." : "Keep exploring — click the planets to learn their facts."}
-            </p>
-            <div className="mt-5 flex justify-center gap-2">
-              <button onClick={restart} className="rounded-full bg-amber-400/20 px-4 py-2 text-sm text-amber-200 hover:bg-amber-400/30">
-                Play again
-              </button>
-              <button onClick={onClose} className="rounded-full bg-white/10 px-4 py-2 text-sm hover:bg-white/20">
+      {!finished && (
+        <div className="mb-4 h-1 w-full overflow-hidden rounded-full bg-white/10">
+          <div className="h-full rounded-full bg-amber-300 transition-all duration-500" style={{ width: `${(index / questions.length) * 100}%` }} />
+        </div>
+      )}
+
+      {finished ? (
+        <div className="animate-pop-in text-center">
+          <div className="font-display text-5xl font-semibold text-amber-200">
+            {score} / {questions.length}
+          </div>
+          <p className="mt-2 text-sm text-white/70">
+            {score === questions.length
+              ? "Perfect — you know your stuff!"
+              : score >= questions.length / 2
+                ? "Nice work. Keep exploring and try again."
+                : "Keep exploring — the answers are all on this page."}
+          </p>
+          <div className="mt-5 flex justify-center gap-2">
+            <button onClick={restart} className="btn-accent">
+              Play again
+            </button>
+            {onClose && (
+              <button onClick={onClose} className="btn-ghost">
                 Close
               </button>
-            </div>
-          </div>
-        ) : (
-          <>
-            <p className="mb-4 text-base">{q.prompt}</p>
-            <div className="grid gap-2">
-              {q.options.map((opt) => {
-                const isAnswer = opt === q.answer;
-                const state = !choice ? "idle" : isAnswer ? "correct" : opt === choice ? "wrong" : "dim";
-                const cls = {
-                  idle: "border-white/10 bg-white/5 hover:bg-white/10",
-                  correct: "border-emerald-400/50 bg-emerald-500/20",
-                  wrong: "border-rose-400/50 bg-rose-500/20",
-                  dim: "border-white/5 bg-white/5 opacity-50",
-                }[state];
-                return (
-                  <button key={opt} onClick={() => answer(opt)} className={`rounded-lg border px-4 py-2.5 text-left text-sm transition ${cls}`}>
-                    {opt}
-                  </button>
-                );
-              })}
-            </div>
-            {choice && (
-              <div className="mt-4 flex items-center justify-between gap-4">
-                <p className="text-xs text-white/60">{q.explanation}</p>
-                <button onClick={next} className="shrink-0 rounded-full bg-white/15 px-4 py-1.5 text-sm hover:bg-white/25">
-                  {index + 1 === questions.length ? "See score" : "Next"}
-                </button>
-              </div>
             )}
-          </>
-        )}
-      </div>
-    </div>
+          </div>
+        </div>
+      ) : (
+        <div key={index} className="animate-fade-in">
+          <p className="mb-4 text-base leading-relaxed">{q.prompt}</p>
+          <div className="grid gap-2">
+            {q.options.map((opt) => {
+              const isAnswer = opt === q.answer;
+              const state = !choice ? "idle" : isAnswer ? "correct" : opt === choice ? "wrong" : "dim";
+              const cls = {
+                idle: "border-white/10 bg-white/5 hover:border-amber-300/40 hover:bg-white/10",
+                correct: "border-emerald-400/50 bg-emerald-500/20",
+                wrong: "border-rose-400/50 bg-rose-500/20",
+                dim: "border-white/5 bg-white/5 opacity-50",
+              }[state];
+              return (
+                <button key={opt} onClick={() => answer(opt)} className={`rounded-xl border px-4 py-2.5 text-left text-sm transition ${cls}`}>
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+          {choice && (
+            <div className="animate-fade-in mt-4 flex items-center justify-between gap-4">
+              <p className="text-xs leading-relaxed text-white/60">{q.explanation}</p>
+              <button onClick={next} className="btn-ghost shrink-0">
+                {index + 1 === questions.length ? "See score" : "Next"}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </>
   );
 }

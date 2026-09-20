@@ -64,13 +64,20 @@ export function CameraRig() {
       controls.target.copy(position);
 
       if (flyIn.current > 0) {
+        // Portrait screens need more distance for the body to fit the narrow viewport.
+        const aspect = (camera as THREE.PerspectiveCamera).aspect ?? 1;
+        const fit = aspect < 1 ? 1.7 : 1;
         if (view === "orbit" && position.lengthSq() > 1) {
           // Approach from the sunlit side so the planet isn't in shadow.
           dir.copy(position).normalize();
           side.crossVectors(UP, dir).normalize();
-          goal.copy(position).addScaledVector(dir, -radius * 3.6).addScaledVector(UP, radius * 1.3).addScaledVector(side, radius * 2);
+          goal
+            .copy(position)
+            .addScaledVector(dir, -radius * 3.6 * fit)
+            .addScaledVector(UP, radius * 1.3 * fit)
+            .addScaledVector(side, radius * 2 * fit);
         } else {
-          goal.set(radius * 0.6, radius * 0.9, radius * 4.4).add(position);
+          goal.set(radius * 0.6 * fit, radius * 0.9 * fit, radius * 4.4 * fit).add(position);
         }
         camera.position.lerp(goal, k);
         flyIn.current -= delta;

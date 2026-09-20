@@ -22,6 +22,8 @@ interface SolarState {
   resetToken: number;
   /** Index into TOUR when the guided tour is running, otherwise null. */
   tourStep: number | null;
+  /** True once the WebGL scene has rendered its first frame (hides the loading screen). */
+  sceneReady: boolean;
 
   setSpeed: (speed: number) => void;
   togglePaused: () => void;
@@ -33,6 +35,7 @@ interface SolarState {
   /** Jump the simulation clock to a real date. */
   jumpToDate: (date: Date) => void;
   setTourStep: (step: number | null) => void;
+  setSceneReady: (ready: boolean) => void;
 }
 
 export const useSolarStore = create<SolarState>((set) => ({
@@ -48,6 +51,7 @@ export const useSolarStore = create<SolarState>((set) => ({
   simDays: 0,
   resetToken: 0,
   tourStep: null,
+  sceneReady: false,
 
   setSpeed: (speed) => set({ speed }),
   togglePaused: () => set((s) => ({ paused: !s.paused })),
@@ -58,6 +62,7 @@ export const useSolarStore = create<SolarState>((set) => ({
   resetView: () => set((s) => ({ selected: null, resetToken: s.resetToken + 1, tourStep: null })),
   jumpToDate: (date) => set((s) => ({ simDays: (date.getTime() - s.epochMs) / 86_400_000 })),
   setTourStep: (tourStep) => set({ tourStep }),
+  setSceneReady: (sceneReady) => set({ sceneReady }),
 }));
 
 /** Julian date of the current simulation instant. */

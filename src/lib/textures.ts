@@ -134,32 +134,6 @@ export function makeBodyTexture(seed: string, kind: TextureKind, color: string, 
   return tex;
 }
 
-/** Planar ring texture: concentric bands with a Cassini-style gap. */
-export function makeRingTexture(seed: string, color: string, innerRatio: number) {
-  const S = 1024;
-  const canvas = document.createElement("canvas");
-  canvas.width = S;
-  canvas.height = S;
-  const ctx = canvas.getContext("2d")!;
-  const rand = rng(seed + "-rings");
-  const c = new THREE.Color(color);
-  const cx = S / 2, inner = innerRatio * (S / 2), outer = S / 2 - 1;
-  for (let r = inner; r < outer; r += 1) {
-    const t = (r - inner) / (outer - inner);
-    let a = 0.55 + 0.35 * Math.sin(t * 40 + rand()) * Math.sin(t * 7);
-    if (t > 0.66 && t < 0.72) a *= 0.15; // gap
-    if (t > 0.94) a *= (1 - t) / 0.06; // soft outer edge
-    ctx.beginPath();
-    ctx.arc(cx, cx, r, 0, Math.PI * 2);
-    ctx.strokeStyle = css(c.clone().lerp(new THREE.Color("#ffffff"), rand() * 0.2), THREE.MathUtils.clamp(a, 0, 1));
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-  }
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  return tex;
-}
-
 /** Soft radial glow used for the Sun's corona sprite. */
 export function makeGlowTexture() {
   const S = 256;
@@ -175,4 +149,55 @@ export function makeGlowTexture() {
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, S, S);
   return new THREE.CanvasTexture(canvas);
+}
+
+/**
+ * Radial ring strip: x runs from the inner edge (left) to the outer edge
+ * (right), matching the layout of photographic ring textures such as the
+ * Solar System Scope Saturn ring alpha map. Use with `ringStripGeometry`.
+ */
+export function makeRingStripTexture(seed: string, color: string) {
+  const W2 = 1024, H2 = 4;
+  const canvas = document.createElement("canvas");
+  canvas.width = W2;
+  canvas.height = H2;
+  const ctx = canvas.getContext("2d")!;
+  const rand = rng(seed + "-rings");
+  const c = new THREE.Color(color);
+  // Uranus-style: a handful of narrow, dark ringlets with a brighter outer (epsilon) ring.
+  const narrow = seed === "uranus";
+  const ringlets = narrow ? Array.from({ length: 9 }, (_, i) => 0.1 + i * 0.1 + (rand() - 0.5) * 0.04) : [];
+  for (let x = 0; x < W2; x++) {
+    const t = x / W2;
+    let a: number;
+    if (narrow) {
+      a = 0;
+      for (const r of ringlets) a += Math.exp(-Math.pow((t - r) / 0.006, 2)) * 0.8;
+      a += Math.exp(-Math.pow((t - 0.95) / 0.012, 2)); // epsilon ring
+    } else {
+      a = 0.55 + 0.35 * Math.sin(t * 40 + rand()) * Math.sin(t * 7);
+      if (t < 0.04) a *= t / 0.04; // soft inner edge
+      if (t > 0.66 && t < 0.72) a *= 0.15; // Cassini-style gap
+      if (t > 0.94) a *= (1 - t) / 0.06; // soft outer edge
+    }
+    ctx.fillStyle = css(c.clone().lerp(new THREE.Color("#ffffff"), rand() * 0.2), THREE.MathUtils.clamp(a, 0, 1));
+    ctx.fillRect(x, 0, 1, H2);
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/** Ring geometry whose UVs run radially (u = 0 at the inner edge, 1 at the outer edge). */
+export function ringStripGeometry(inner: number, outer: number, segments = 128) {
+  const geo = new THREE.RingGeometry(inner, outer, segments, 1);
+  const pos = geo.attributes.position;
+  const uv = geo.attributes.uv;
+  const v = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) {
+    v.fromBufferAttribute(pos, i);
+    uv.setXY(i, (v.length() - inner) / (outer - inner), 0.5);
+  }
+  uv.needsUpdate = true;
+  return geo;
 }

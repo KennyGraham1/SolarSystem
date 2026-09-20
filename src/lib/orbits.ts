@@ -125,9 +125,13 @@ export function toScene(p: AUPosition, trueDistances: boolean): [number, number,
   return [p.x * f, p.z * f, -p.y * f];
 }
 
-/** Mean orbital speed in km/s from semi-major axis and period. */
-export function orbitalSpeedKmS(au: number, periodDays: number) {
-  return (2 * Math.PI * au * 149_597_870.7) / (periodDays * 86_400);
+/** Mean orbital speed in km/s: ellipse perimeter (Ramanujan) over the period. */
+export function orbitalSpeedKmS(id: Exclude<BodyId, "sun">, periodDays: number) {
+  const [a, e] = ELEMENTS[id].base;
+  const b = a * Math.sqrt(1 - e * e);
+  const h = ((a - b) / (a + b)) ** 2;
+  const perimeterAU = Math.PI * (a + b) * (1 + (3 * h) / (10 + Math.sqrt(4 - 3 * h)));
+  return (perimeterAU * 149_597_870.7) / (periodDays * 86_400);
 }
 
 /** Light travel time from the Sun in seconds. */
