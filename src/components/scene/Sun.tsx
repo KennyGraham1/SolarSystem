@@ -3,7 +3,7 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { SUN, SUN_VISUAL_RADIUS } from "@/lib/planets";
+import { SUN, SUN_VISUAL_RADIUS, spinStep } from "@/lib/planets";
 import { makeBodyTexture, makeGlowTexture } from "@/lib/textures";
 import { getTransform, useSolarStore } from "@/store/useSolarStore";
 import { Label } from "./Label";
@@ -16,9 +16,9 @@ export function Sun() {
   const selected = useSolarStore((s) => s.selected);
   const select = useSolarStore((s) => s.select);
 
-  useFrame(() => {
-    const { simDays } = useSolarStore.getState();
-    if (meshRef.current) meshRef.current.rotation.y = (Math.PI * 2 * simDays) / SUN.rotationPeriodDays;
+  useFrame((_, delta) => {
+    const { speed, paused } = useSolarStore.getState();
+    if (meshRef.current && !paused) meshRef.current.rotation.y += spinStep(SUN.rotationPeriodDays, speed, delta);
     const t = getTransform("sun");
     t.position.set(0, 0, 0);
     t.radius = SUN_VISUAL_RADIUS;

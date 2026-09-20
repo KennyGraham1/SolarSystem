@@ -29,7 +29,7 @@ interface SolarState {
 }
 
 export const useSolarStore = create<SolarState>((set) => ({
-  speed: 2,
+  speed: 1,
   paused: false,
   showOrbits: true,
   showLabels: true,

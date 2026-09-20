@@ -4,7 +4,7 @@ import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Line } from "@react-three/drei";
 import * as THREE from "three";
-import { MOON, orbitRadius, startAngle, visualRadius, type Body } from "@/lib/planets";
+import { MOON, orbitRadius, spinStep, startAngle, visualRadius, type Body } from "@/lib/planets";
 import { makeBodyTexture, makeRingTexture } from "@/lib/textures";
 import { getTransform, useSolarStore } from "@/store/useSolarStore";
 import { Label } from "./Label";
@@ -73,13 +73,13 @@ export function Planet({ body, index }: { body: Body; index: number }) {
   const phase = startAngle(index);
   const tilt = THREE.MathUtils.degToRad(body.axialTiltDeg);
 
-  useFrame(() => {
-    const { simDays } = useSolarStore.getState();
+  useFrame((_, delta) => {
+    const { simDays, speed, paused } = useSolarStore.getState();
     const a = phase + (TWO_PI * simDays) / body.orbitalPeriodDays;
     const g = orbitRef.current;
     if (!g) return;
     g.position.set(Math.cos(a) * distance, 0, -Math.sin(a) * distance);
-    if (meshRef.current) meshRef.current.rotation.y = (TWO_PI * simDays) / body.rotationPeriodDays;
+    if (meshRef.current && !paused) meshRef.current.rotation.y += spinStep(body.rotationPeriodDays, speed, delta);
     const t = getTransform(body.id);
     t.position.copy(g.position);
     t.radius = body.rings ? radius * body.rings.outer : radius;

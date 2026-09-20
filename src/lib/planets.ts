@@ -289,6 +289,16 @@ export function startAngle(index: number) {
   return (index * 2.399963) % (Math.PI * 2); // golden angle
 }
 
+/** Max visible spin (revolutions per real second). Orbits stay exact; spin is
+ *  capped so a fast clock doesn't turn planets into a blur. */
+export const MAX_SPIN_REV_PER_SEC = 0.25;
+
+/** Spin increment (radians) for this frame, honouring direction and the cap. */
+export function spinStep(rotationPeriodDays: number, speed: number, delta: number) {
+  const revPerSec = Math.min(speed / Math.abs(rotationPeriodDays), MAX_SPIN_REV_PER_SEC);
+  return Math.sign(rotationPeriodDays) * revPerSec * Math.PI * 2 * delta;
+}
+
 export function formatPeriod(days: number) {
   const abs = Math.abs(days);
   if (abs >= 365) return `${(abs / 365.25).toFixed(1)} years`;
