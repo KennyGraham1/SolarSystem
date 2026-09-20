@@ -21,20 +21,42 @@ function formatSpeed(s: number) {
   return `${(s * 24).toFixed(1)} h / s`;
 }
 
+const toInputDate = (d: Date) => d.toISOString().slice(0, 10);
+
 function SimDate() {
   // Poll the fast-changing clock at a readable rate instead of every frame.
-  const [days, setDays] = useState(0);
-  const [start] = useState(() => new Date());
+  const [date, setDate] = useState<Date | null>(null);
+  const jumpToDate = useSolarStore((s) => s.jumpToDate);
   useEffect(() => {
-    const id = setInterval(() => setDays(useSolarStore.getState().simDays), 200);
+    const tick = () => {
+      const { epochMs, simDays } = useSolarStore.getState();
+      setDate(new Date(epochMs + simDays * 86_400_000));
+    };
+    tick();
+    const id = setInterval(tick, 200);
     return () => clearInterval(id);
   }, []);
-  const date = new Date(start.getTime() + days * 86_400_000);
+  if (!date) return null;
+  const valid = date.getFullYear() >= 1800 && date.getFullYear() <= 2050;
   return (
-    <div className="font-mono text-xs tabular-nums text-white/80">
-      <span className="text-white/40">Sim date </span>
-      {date.toLocaleDateString("en-GB", { year: "numeric", month: "short", day: "2-digit" })}
-      <span className="ml-2 text-white/40">+{Math.floor(days).toLocaleString("en-US")} d</span>
+    <div className="flex items-center gap-2 text-xs">
+      <span className="text-white/40">Date</span>
+      <input
+        type="date"
+        min="1800-01-01"
+        max="2050-12-31"
+        value={valid ? toInputDate(date) : ""}
+        onChange={(e) => {
+          const d = new Date(e.target.value + "T12:00:00");
+          if (!Number.isNaN(d.getTime())) jumpToDate(d);
+        }}
+        className="rounded bg-white/10 px-2 py-0.5 font-mono text-white/90 outline-none [color-scheme:dark]"
+        title="Planet positions are computed for this date (accurate 1800–2050)"
+      />
+      <button onClick={() => jumpToDate(new Date())} className="rounded-md px-2 py-1 text-[11px] text-white/60 hover:bg-white/10 hover:text-white">
+        Today
+      </button>
+      {!valid && <span className="text-amber-300/80">positions approximate outside 1800–2050</span>}
     </div>
   );
 }

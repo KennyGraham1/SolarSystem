@@ -14,10 +14,14 @@ interface SolarState {
   view: ViewMode;
   selected: BodyId | null;
   quizOpen: boolean;
-  /** Elapsed simulation time in Earth days. Written every frame by the scene. */
+  /** Real-world instant the simulation started from (ms since epoch). */
+  epochMs: number;
+  /** Elapsed simulation time in Earth days since `epochMs`. Written every frame by the scene. */
   simDays: number;
   /** Incremented to ask the camera rig to fly back to the overview. */
   resetToken: number;
+  /** Index into TOUR when the guided tour is running, otherwise null. */
+  tourStep: number | null;
 
   setSpeed: (speed: number) => void;
   togglePaused: () => void;
@@ -26,6 +30,9 @@ interface SolarState {
   select: (id: BodyId | null) => void;
   setQuizOpen: (open: boolean) => void;
   resetView: () => void;
+  /** Jump the simulation clock to a real date. */
+  jumpToDate: (date: Date) => void;
+  setTourStep: (step: number | null) => void;
 }
 
 export const useSolarStore = create<SolarState>((set) => ({
@@ -37,8 +44,10 @@ export const useSolarStore = create<SolarState>((set) => ({
   view: "orbit",
   selected: null,
   quizOpen: false,
+  epochMs: Date.now(),
   simDays: 0,
   resetToken: 0,
+  tourStep: null,
 
   setSpeed: (speed) => set({ speed }),
   togglePaused: () => set((s) => ({ paused: !s.paused })),
@@ -46,8 +55,15 @@ export const useSolarStore = create<SolarState>((set) => ({
   setView: (view) => set({ view, selected: null }),
   select: (id) => set({ selected: id }),
   setQuizOpen: (quizOpen) => set({ quizOpen }),
-  resetView: () => set((s) => ({ selected: null, resetToken: s.resetToken + 1 })),
+  resetView: () => set((s) => ({ selected: null, resetToken: s.resetToken + 1, tourStep: null })),
+  jumpToDate: (date) => set((s) => ({ simDays: (date.getTime() - s.epochMs) / 86_400_000 })),
+  setTourStep: (tourStep) => set({ tourStep }),
 }));
+
+/** Julian date of the current simulation instant. */
+export function currentJD(s: Pick<SolarState, "epochMs" | "simDays">) {
+  return s.epochMs / 86_400_000 + 2440587.5 + s.simDays;
+}
 
 /**
  * Live world positions and radii of every body, written by the scene each

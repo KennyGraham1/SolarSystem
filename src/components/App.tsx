@@ -6,6 +6,7 @@ import { PlanetList } from "./ui/PlanetList";
 import { ControlBar } from "./ui/ControlBar";
 import { InfoPanel } from "./ui/InfoPanel";
 import { Quiz } from "./ui/Quiz";
+import { Tour } from "./ui/Tour";
 
 // WebGL only exists in the browser, so the scene must skip server rendering.
 const SolarScene = dynamic(() => import("./scene/SolarScene"), {
@@ -23,6 +24,7 @@ export function App() {
       <PlanetList />
       <InfoPanel />
       <ControlBar />
+      <Tour />
       <Quiz />
     </main>
   );

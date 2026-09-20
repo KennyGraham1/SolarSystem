@@ -95,6 +95,16 @@ const generators: Array<() => Question> = [
     return withOptions(`Which planet does this describe? "${fact}"`, p, PLANETS, fact);
   },
   () => {
+    const four = pick(PLANETS, 4);
+    const fastest = four.reduce((a, b) => (a.distanceAU < b.distanceAU ? a : b));
+    return {
+      prompt: "Which of these planets moves fastest along its orbit?",
+      options: shuffle(four).map((p) => p.name),
+      answer: fastest.name,
+      explanation: `${fastest.name} is the closest of these to the Sun, and closer planets orbit faster (Kepler's third law).`,
+    };
+  },
+  () => {
     const p = pick(PLANETS.filter((b) => b.rings), 1)[0];
     return withOptions("Which of these planets has a ring system?", p, PLANETS.filter((b) => !b.rings), `${p.name} has rings. All four giant planets do, but Saturn's are by far the most prominent.`);
   },

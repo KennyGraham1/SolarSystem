@@ -1,7 +1,14 @@
 "use client";
 
 import { bodyById, formatKm, formatPeriod } from "@/lib/planets";
+import { lightTimeSeconds, orbitalSpeedKmS } from "@/lib/orbits";
 import { useSolarStore } from "@/store/useSolarStore";
+import { YouOnPlanet } from "./YouOnPlanet";
+
+function formatLightTime(seconds: number) {
+  if (seconds < 3600) return `${(seconds / 60).toFixed(1)} min`;
+  return `${(seconds / 3600).toFixed(1)} hours`;
+}
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
@@ -47,6 +54,8 @@ export function InfoPanel() {
         <Stat label="Gravity" value={`${b.gravity} m/s²`} />
         <Stat label="Mean temp." value={`${b.meanTempC.toLocaleString("en-US")} °C`} />
         {!isSun && <Stat label="Moons" value={String(b.moons)} />}
+        {!isSun && <Stat label="Orbital speed" value={`${orbitalSpeedKmS(b.distanceAU, b.orbitalPeriodDays).toFixed(1)} km/s`} />}
+        {!isSun && <Stat label="Sunlight takes" value={formatLightTime(lightTimeSeconds(b.distanceAU))} />}
       </div>
 
       <h3 className="mb-1.5 text-[11px] uppercase tracking-wider text-white/40">Did you know?</h3>
@@ -58,6 +67,8 @@ export function InfoPanel() {
           </li>
         ))}
       </ul>
+
+      <YouOnPlanet key={b.id} body={b} />
     </aside>
   );
 }

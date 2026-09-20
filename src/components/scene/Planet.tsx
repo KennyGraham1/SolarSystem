@@ -4,22 +4,22 @@ import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Line } from "@react-three/drei";
 import * as THREE from "three";
-import { MOON, orbitRadius, spinStep, startAngle, visualRadius, type Body } from "@/lib/planets";
+import { MOON, spinStep, visualRadius, type Body, type BodyId } from "@/lib/planets";
+import { heliocentricPosition, orbitPath, toScene } from "@/lib/orbits";
 import { makeBodyTexture, makeRingTexture } from "@/lib/textures";
-import { getTransform, useSolarStore } from "@/store/useSolarStore";
+import { currentJD, getTransform, useSolarStore } from "@/store/useSolarStore";
 import { Label } from "./Label";
 
 const TWO_PI = Math.PI * 2;
 
-function OrbitPath({ radius }: { radius: number }) {
+type PlanetId = Exclude<BodyId, "sun">;
+
+function OrbitPath({ id, trueDistances }: { id: PlanetId; trueDistances: boolean }) {
+  // The ellipse drifts by a negligible amount over decades, so sample it once at the start epoch.
   const points = useMemo(() => {
-    const pts: THREE.Vector3[] = [];
-    for (let i = 0; i <= 256; i++) {
-      const a = (i / 256) * TWO_PI;
-      pts.push(new THREE.Vector3(Math.cos(a) * radius, 0, -Math.sin(a) * radius));
-    }
-    return pts;
-  }, [radius]);
+    const jd = currentJD({ epochMs: useSolarStore.getState().epochMs, simDays: 0 });
+    return orbitPath(id, jd).map((p) => new THREE.Vector3(...toScene(p, trueDistances)));
+  }, [id, trueDistances]);
   return <Line points={points} color="#ffffff" transparent opacity={0.18} lineWidth={1} />;
 }
 
@@ -57,7 +57,8 @@ function Moon({ parentRadius }: { parentRadius: number }) {
   );
 }
 
-export function Planet({ body, index }: { body: Body; index: number }) {
+export function Planet({ body }: { body: Body }) {
+  const id = body.id as PlanetId;
   const orbitRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
   const texture = useMemo(() => makeBodyTexture(body.id, body.texture, body.color, body.accent), [body]);
@@ -69,16 +70,14 @@ export function Planet({ body, index }: { body: Body; index: number }) {
   const select = useSolarStore((s) => s.select);
 
   const radius = visualRadius(body.radiusKm);
-  const distance = orbitRadius(body.distanceAU, trueDistances);
-  const phase = startAngle(index);
   const tilt = THREE.MathUtils.degToRad(body.axialTiltDeg);
 
   useFrame((_, delta) => {
-    const { simDays, speed, paused } = useSolarStore.getState();
-    const a = phase + (TWO_PI * simDays) / body.orbitalPeriodDays;
+    const state = useSolarStore.getState();
+    const { speed, paused } = state;
     const g = orbitRef.current;
     if (!g) return;
-    g.position.set(Math.cos(a) * distance, 0, -Math.sin(a) * distance);
+    g.position.set(...toScene(heliocentricPosition(id, currentJD(state)), trueDistances));
     if (meshRef.current && !paused) meshRef.current.rotation.y += spinStep(body.rotationPeriodDays, speed, delta);
     const t = getTransform(body.id);
     t.position.copy(g.position);
@@ -88,7 +87,7 @@ export function Planet({ body, index }: { body: Body; index: number }) {
   const isActive = selected === body.id;
   return (
     <group>
-      {showOrbits && <OrbitPath radius={distance} />}
+      {showOrbits && <OrbitPath id={id} trueDistances={trueDistances} />}
       <group ref={orbitRef}>
         <group rotation={[0, 0, tilt]}>
           <mesh

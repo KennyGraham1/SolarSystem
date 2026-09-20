@@ -23,8 +23,8 @@ function OrbitView() {
     <>
       <ambientLight intensity={0.35} />
       <Sun />
-      {PLANETS.map((p, i) => (
-        <Planet key={p.id} body={p} index={i} />
+      {PLANETS.map((p) => (
+        <Planet key={p.id} body={p} />
       ))}
     </>
   );

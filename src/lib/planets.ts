@@ -31,6 +31,8 @@ export interface Body {
   massEarths: number;
   description: string;
   facts: string[];
+  /** One teaching point shown during the guided tour. */
+  lesson: string;
   rings?: { inner: number; outer: number; color: string; opacity: number };
 }
 
@@ -58,6 +60,8 @@ export const BODIES: Body[] = [
       "The core reaches roughly 15 million °C, fusing 600 million tonnes of hydrogen every second.",
       "The Sun is about 4.6 billion years old and roughly halfway through its life.",
     ],
+    lesson:
+      "Everything here orbits the Sun because it holds 99.8% of the system's mass. Watch the planets: the closer they are, the faster they move. That is Kepler's third law — the Sun's gravity is stronger up close, so inner planets must move faster to stay in orbit.",
   },
   {
     id: "mercury",
@@ -82,6 +86,8 @@ export const BODIES: Body[] = [
       "Despite being closest to the Sun, it is not the hottest planet — Venus is.",
       "Its heavily cratered surface looks a lot like our Moon.",
     ],
+    lesson:
+      "Look at Mercury's orbit — it is visibly off-centre. Its path is the most elliptical of the planets, so it speeds up near the Sun and slows down far away. Speed the clock up to 1 mo/s and you will see it lap Earth four times a year.",
   },
   {
     id: "venus",
@@ -106,6 +112,8 @@ export const BODIES: Body[] = [
       "Surface pressure is about 92 times that of Earth — like being 900 m underwater.",
       "It is the brightest natural object in our night sky after the Moon.",
     ],
+    lesson:
+      "Venus is almost Earth's size, yet it is the hottest planet. Its thick CO₂ atmosphere traps heat like a blanket — the greenhouse effect at full strength. It also spins backwards, so on Venus the Sun rises in the west.",
   },
   {
     id: "earth",
@@ -130,6 +138,8 @@ export const BODIES: Body[] = [
       "The Moon is slowly drifting away from Earth at about 3.8 cm per year.",
       "Earth's magnetic field shields us from the solar wind and creates the auroras.",
     ],
+    lesson:
+      "The only planet we know with liquid oceans and life. Notice the 23.4° tilt of its axis: as Earth travels around the Sun, first one hemisphere and then the other leans toward the Sun. That tilt, not distance, is what causes the seasons.",
   },
   {
     id: "mars",
@@ -154,6 +164,8 @@ export const BODIES: Body[] = [
       "A Martian day (a 'sol') is only 40 minutes longer than an Earth day.",
       "Its two tiny moons, Phobos and Deimos, may be captured asteroids.",
     ],
+    lesson:
+      "Mars is half Earth's size and lost most of its air long ago. Its day is almost the same length as ours, but its year is nearly twice as long — so every 26 months Earth 'catches up' to Mars, which is when we launch missions there.",
   },
   {
     id: "jupiter",
@@ -178,6 +190,8 @@ export const BODIES: Body[] = [
       "The Great Red Spot has been raging for at least 350 years.",
       "Its moon Ganymede is larger than the planet Mercury.",
     ],
+    lesson:
+      "Jupiter is the giant: 11 Earths wide and spinning so fast its day is under 10 hours. The bands are clouds moving in opposite directions, and the Great Red Spot is a storm larger than Earth that has raged for centuries.",
   },
   {
     id: "saturn",
@@ -202,6 +216,8 @@ export const BODIES: Body[] = [
       "It is the least dense planet — its average density is lower than water.",
       "Its moon Titan has a thick atmosphere and lakes of liquid methane.",
     ],
+    lesson:
+      "Saturn's rings are billions of chunks of ice and rock, each on its own tiny orbit. They stretch 280,000 km across but are mostly less than a kilometre thick. Saturn is so light it would float in water — if you could find a big enough bath.",
     rings: { inner: 1.3, outer: 2.3, color: "#d9c69a", opacity: 0.85 },
   },
   {
@@ -227,6 +243,8 @@ export const BODIES: Body[] = [
       "It has the coldest atmosphere of any planet, reaching −224 °C.",
       "Uranus has 13 faint rings and was the first planet discovered with a telescope (1781).",
     ],
+    lesson:
+      "Uranus is knocked on its side, with a 98° tilt. It rolls around the Sun, so each pole gets 42 years of daylight and 42 years of night. Its cyan colour comes from methane, which absorbs red light.",
     rings: { inner: 1.6, outer: 1.9, color: "#bfe6ee", opacity: 0.35 },
   },
   {
@@ -252,6 +270,8 @@ export const BODIES: Body[] = [
       "Its largest moon, Triton, orbits backwards and is probably a captured Kuiper Belt object.",
       "Sunlight at Neptune is about 900 times fainter than on Earth.",
     ],
+    lesson:
+      "The outermost planet takes 165 years to orbit — it has completed only one lap since it was discovered in 1846. Switch on 'True distances' to see how far out it really is: light from the Sun takes over 4 hours to reach it.",
   },
 ];
 
@@ -282,11 +302,6 @@ export function visualRadius(radiusKm: number) {
 export function orbitRadius(au: number, trueDistances: boolean) {
   if (au === 0) return 0;
   return trueDistances ? au * 18 : 6 + 12 * Math.log(1 + 3 * au);
-}
-
-/** Deterministic starting angle so planets are spread around the Sun. */
-export function startAngle(index: number) {
-  return (index * 2.399963) % (Math.PI * 2); // golden angle
 }
 
 /** Max visible spin (revolutions per real second). Orbits stay exact; spin is
