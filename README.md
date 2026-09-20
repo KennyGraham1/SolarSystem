@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Solar System Explorer
 
-## Getting Started
+An interactive 3D solar system for learning about the Sun and the eight planets, built with Next.js, React Three Fiber and Tailwind.
 
-First, run the development server:
+## Run it
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## What you can do
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Orbit view** – watch the planets orbit and spin. Drag to rotate, scroll to zoom.
+- **Click any body** (or use the list on the left) to fly to it and open a fact panel: radius, mass, distance, year/day length, axial tilt, gravity, temperature, moons, plus "did you know" facts.
+- **Time controls** – pause (Space), change speed from hours-per-second to years-per-second, and watch the simulated date advance.
+- **Toggles** – orbit lines, labels, and *True distances* (real AU ratios, which shows how empty the solar system really is).
+- **Size comparison** – every body lined up at its true relative size.
+- **Quiz** – 8 randomly generated questions built from the planet data.
+- **Esc** resets the camera.
 
-## Learn More
+## Notes on accuracy
 
-To learn more about Next.js, take a look at the following resources:
+- Physical data (radius, orbital period, rotation period, tilt, gravity, moon counts, temperatures) come from NASA planetary fact sheets.
+- In the default orbit view, planet **sizes** are square-root scaled and **distances** are log-compressed so everything fits on screen. Turn on *True distances* or open *Size comparison* for accurate proportions.
+- Orbits are drawn as circles (real orbits are slightly elliptical) and starting positions are arbitrary, not today's real positions.
+- Planet surfaces are procedurally generated textures, not photographs.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `src/lib/planets.ts` – all body data and the scene scaling helpers
+- `src/lib/textures.ts` – procedural canvas textures (surfaces, rings, sun glow)
+- `src/lib/quiz.ts` – question generators
+- `src/store/useSolarStore.ts` – zustand store for UI/simulation state
+- `src/components/scene/` – React Three Fiber scene (Sun, planets, camera rig, comparison view)
+- `src/components/ui/` – header, planet list, controls, info panel, quiz
