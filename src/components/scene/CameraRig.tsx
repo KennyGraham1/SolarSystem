@@ -5,7 +5,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { bodyTransforms, getTransform, useSolarStore } from "@/store/useSolarStore";
 import { bodyById } from "@/lib/planets";
-import { COMPARE_CENTER_X } from "./CompareView";
+import { compareFrame } from "./CompareView";
 
 interface ControlsLike {
   target: THREE.Vector3;
@@ -14,7 +14,7 @@ interface ControlsLike {
 
 export const DEFAULT_CAMERA = new THREE.Vector3(0, 62, 118);
 export const TRUE_DISTANCE_CAMERA = new THREE.Vector3(0, 480, 820);
-export const COMPARE_CAMERA = new THREE.Vector3(COMPARE_CENTER_X, 16, 128);
+const compareCamera = new THREE.Vector3();
 
 /** Moons that aren't drawn in the current view fly to their parent instead. */
 function targetTransform(id: Parameters<typeof getTransform>[0]) {
@@ -92,9 +92,9 @@ export function CameraRig() {
         flyIn.current -= delta;
       }
     } else if (flyHome.current > 0) {
-      const home = view === "compare" ? COMPARE_CAMERA : trueDistances ? TRUE_DISTANCE_CAMERA : DEFAULT_CAMERA;
+      const home = view === "compare" ? compareCamera.set(compareFrame.centerX, compareFrame.distance * 0.12, compareFrame.distance) : trueDistances ? TRUE_DISTANCE_CAMERA : DEFAULT_CAMERA;
       camera.position.lerp(home, k);
-      controls.target.lerp(view === "compare" ? goal.set(COMPARE_CENTER_X, 0, 0) : goal.set(0, 0, 0), k);
+      controls.target.lerp(view === "compare" ? goal.set(compareFrame.centerX, 4, 0) : goal.set(0, 0, 0), k);
       flyHome.current -= delta;
     }
     controls.update();

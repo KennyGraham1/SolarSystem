@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useSolarStore, type ViewMode } from "@/store/useSolarStore";
 
 const TABS: { id: ViewMode; label: string; short: string }[] = [
   { id: "orbit", label: "Orbit view", short: "Orbit" },
-  { id: "compare", label: "Size comparison", short: "Sizes" },
+  { id: "compare", label: "Compare", short: "Compare" },
+  { id: "universe", label: "Zoom out", short: "Zoom out" },
 ];
 
 export function Header() {
@@ -42,6 +44,9 @@ export function Header() {
             </button>
           ))}
         </div>
+        <Link href="/learn" className="btn-ghost whitespace-nowrap !py-1.5">
+          Learn
+        </Link>
         <button onClick={() => setTourStep(tourStep === null ? 0 : null)} className={`whitespace-nowrap !py-1.5 ${tourStep === null ? "btn-ghost" : "btn-accent"}`}>
           {tourStep === null ? "Start tour" : "End tour"}
         </button>

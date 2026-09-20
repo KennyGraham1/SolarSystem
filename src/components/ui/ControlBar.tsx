@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type CSSProperties } from "react";
 import { useSolarStore } from "@/store/useSolarStore";
+import { METRICS, metricById } from "@/lib/compare";
 import { PlanetChips } from "./PlanetList";
 
 // Log-scale slider: 0..100 -> 0.1..1000 days per second
@@ -61,6 +62,49 @@ function SimDate() {
         Today
       </button>
       {!valid && <span className="text-amber-300/80">positions approximate outside 1800–2050</span>}
+    </div>
+  );
+}
+
+function ComparePicker() {
+  const metric = useSolarStore((s) => s.compareMetric);
+  const group = useSolarStore((s) => s.compareGroup);
+  const setMetric = useSolarStore((s) => s.setCompareMetric);
+  const setGroup = useSolarStore((s) => s.setCompareGroup);
+  const showLabels = useSolarStore((s) => s.showLabels);
+  const toggle = useSolarStore((s) => s.toggle);
+  const def = metricById(metric);
+  return (
+    <div className="flex w-full flex-col gap-2">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+        <span className="text-[11px] uppercase tracking-wider text-white/40">Compare by</span>
+        <div className="no-scrollbar flex gap-1 overflow-x-auto">
+          {METRICS.map((m) => (
+            <button
+              key={m.id}
+              onClick={() => setMetric(m.id)}
+              className={`shrink-0 rounded-full px-2.5 py-1 text-xs transition ${metric === m.id ? "bg-amber-300/20 text-amber-100" : "text-white/55 hover:bg-white/10 hover:text-white"}`}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+        <span className="text-[11px] uppercase tracking-wider text-white/40">Show</span>
+        {(
+          [
+            ["planets", "Sun & planets"],
+            ["moons", "Dwarfs & moons"],
+            ["all", "Everything"],
+          ] as const
+        ).map(([id, label]) => (
+          <Toggle key={id} label={label} on={group === id} onClick={() => setGroup(id)} />
+        ))}
+        <span className="mx-1 hidden h-4 w-px bg-white/10 sm:block" />
+        <Toggle label="Labels" on={showLabels} onClick={() => toggle("showLabels")} />
+        <p className="basis-full text-[11px] text-white/45 sm:ml-auto sm:basis-auto">{def.hint} Click a body to learn more.</p>
+      </div>
     </div>
   );
 }
@@ -154,12 +198,7 @@ export function ControlBar() {
               </div>
             </>
           ) : (
-            <>
-              <p className="flex-1 text-xs text-white/70">
-                Every body is drawn at its <span className="text-white">true relative diameter</span> (Earth = 1). Click one to learn more.
-              </p>
-              <Toggle label="Labels" on={showLabels} onClick={() => toggle("showLabels")} />
-            </>
+            <ComparePicker />
           )}
           <button onClick={resetView} className="rounded-full border border-white/10 px-2.5 py-1 text-xs text-white/60 transition hover:border-white/25 hover:text-white" title="Esc">
             Reset view

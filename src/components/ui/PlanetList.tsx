@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { BODIES, DWARF_PLANETS, MOONS, PLANETS, SUN, bodyHref, type Body } from "@/lib/planets";
 import { useSolarStore } from "@/store/useSolarStore";
 
@@ -16,13 +17,26 @@ export function PlanetList() {
   const selected = useSolarStore((s) => s.selected);
   const select = useSolarStore((s) => s.select);
 
+  // Dwarf planets and moons start collapsed; a group is always shown open while one of its bodies is selected.
+  const [open, setOpen] = useState<Record<string, boolean>>({ [GROUPS[0][0]]: true });
+  const isOpen = (heading: string, bodies: Body[]) => !!open[heading] || bodies.some((b) => b.id === selected);
+
   return (
     <nav aria-label="Bodies" className="absolute left-4 top-1/2 z-20 hidden max-h-[calc(100dvh-13rem)] -translate-y-1/2 flex-col gap-0.5 overflow-y-auto md:flex">
       {GROUPS.map(([heading, bodies], gi) => [
-        <div key={heading} className={`eyebrow px-2.5 pb-0.5 ${gi === 0 ? "" : "pt-2.5"}`}>
+        <button
+          key={heading}
+          onClick={() => setOpen((o) => ({ ...o, [heading]: !o[heading] }))}
+          aria-expanded={isOpen(heading, bodies)}
+          className={`eyebrow flex items-center gap-1.5 rounded-full px-2.5 pb-0.5 text-left transition hover:text-white ${gi === 0 ? "" : "pt-2.5"}`}
+        >
+          <span className={`inline-block text-[9px] transition-transform ${isOpen(heading, bodies) ? "rotate-90" : ""}`} aria-hidden>
+            ▶
+          </span>
           {heading}
-        </div>,
-        ...bodies.map((b) => {
+          {!isOpen(heading, bodies) && <span className="ml-0.5 text-white/30">{bodies.length}</span>}
+        </button>,
+        ...(isOpen(heading, bodies) ? bodies : []).map((b) => {
         const on = selected === b.id;
         return (
           <div key={b.id} className={`group flex items-center rounded-full pr-1 transition ${on ? "bg-white/12" : "hover:bg-white/8"}`}>

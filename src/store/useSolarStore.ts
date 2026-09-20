@@ -2,7 +2,9 @@ import { create } from "zustand";
 import * as THREE from "three";
 import type { BodyId } from "@/lib/planets";
 
-export type ViewMode = "orbit" | "compare";
+export type ViewMode = "orbit" | "compare" | "universe";
+export type CompareMetric = "size" | "mass" | "gravity" | "day" | "year" | "temperature" | "distance" | "moons";
+export type CompareGroup = "planets" | "moons" | "all";
 
 interface SolarState {
   /** Simulated days per real second. */
@@ -13,6 +15,10 @@ interface SolarState {
   showBelts: boolean;
   trueDistances: boolean;
   view: ViewMode;
+  compareMetric: CompareMetric;
+  compareGroup: CompareGroup;
+  /** Cosmic zoom level index (0 = solar system) for the universe view. */
+  universeLevel: number;
   selected: BodyId | null;
   quizOpen: boolean;
   /** Real-world instant the simulation started from (ms since epoch). */
@@ -30,6 +36,9 @@ interface SolarState {
   togglePaused: () => void;
   toggle: (key: "showOrbits" | "showLabels" | "trueDistances" | "showBelts") => void;
   setView: (view: ViewMode) => void;
+  setCompareMetric: (m: CompareMetric) => void;
+  setCompareGroup: (g: CompareGroup) => void;
+  setUniverseLevel: (level: number) => void;
   select: (id: BodyId | null) => void;
   setQuizOpen: (open: boolean) => void;
   resetView: () => void;
@@ -47,6 +56,9 @@ export const useSolarStore = create<SolarState>((set) => ({
   showBelts: true,
   trueDistances: false,
   view: "orbit",
+  compareMetric: "size",
+  compareGroup: "planets",
+  universeLevel: 0,
   selected: null,
   quizOpen: false,
   epochMs: Date.now(),
@@ -59,6 +71,9 @@ export const useSolarStore = create<SolarState>((set) => ({
   togglePaused: () => set((s) => ({ paused: !s.paused })),
   toggle: (key) => set((s) => ({ [key]: !s[key] })),
   setView: (view) => set({ view, selected: null }),
+  setCompareMetric: (compareMetric) => set({ compareMetric }),
+  setCompareGroup: (compareGroup) => set({ compareGroup }),
+  setUniverseLevel: (universeLevel) => set({ universeLevel }),
   select: (id) => set({ selected: id }),
   setQuizOpen: (quizOpen) => set({ quizOpen }),
   resetView: () => set((s) => ({ selected: null, resetToken: s.resetToken + 1, tourStep: null })),

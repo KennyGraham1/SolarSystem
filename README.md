@@ -20,8 +20,11 @@ Open http://localhost:3000.
 - **Toggles** – orbit lines, labels, and *True distances* (real AU ratios, which shows how empty the solar system really is).
 - **Dwarf planets and belts** – Ceres and Pluto orbit on their real (JPL SBDB) orbits — Pluto's is tilted 17° and crosses inside Neptune's — with the asteroid belt (2.1–3.3 AU) and Kuiper belt (30–50 AU) drawn as point clouds (toggle *Belts*).
 - **Moons** – the Moon, Europa, Titan and Triton have their own pages (`/moon/<id>`) and appear in the size comparison; selecting one in the explorer flies to its parent planet.
-- **Size comparison** – every body lined up at its true relative size.
-- **Quiz** – 8 randomly generated questions built from the planet data.
+- **Compare** – every body at its true relative size, or ranked with bars by mass, gravity, day length, year length, temperature, distance from the Sun or number of moons; filter to Sun & planets, dwarfs & moons, or everything.
+- **Zoom out** – a ten-step cosmic zoom from the inner solar system through the Oort cloud, the nearest stars (real 3D positions), the Milky Way, the Local Group and Laniakea to the observable universe, with captions and scale bars (`src/components/universe/`).
+- **Learn** (`/learn`) – eight interactive explainers with slider-driven diagrams: day/night & sunsets, seasons, Moon phases, solar and lunar eclipses (with upcoming dates), tides, retrograde motion, and why the sky is blue / stars twinkle.
+- **Moons** – 14 moons across the planets and Pluto, each with a page (`/moon/<id>`), grouped (and collapsible) in the explorer's body list.
+- **Quiz** – 5/10/15 questions from a pool of 44 generators: multiple choice, true/false and put-in-order. A wrong answer earns a hint and a second try; every answer comes with an explanation and a link to the page or explainer that covers it, and the results screen reviews what you missed by topic.
 - **Esc** resets the camera.
 - **Planet pages** – every body has a dedicated page at `/planet/<id>` (e.g. `/planet/saturn`) with a spinning 3D hero, an interactive interior cross-section, comparison bars against Earth, notable moons, an exploration timeline, a per-planet quiz, a glossary and sources. Reach them from the info panel, the planet list or the tour card.
 

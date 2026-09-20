@@ -15,6 +15,16 @@ import { moon } from "./moon";
 import { europa } from "./europa";
 import { titan } from "./titan";
 import { triton } from "./triton";
+import { phobos } from "./phobos";
+import { deimos } from "./deimos";
+import { io } from "./io";
+import { ganymede } from "./ganymede";
+import { callisto } from "./callisto";
+import { enceladus } from "./enceladus";
+import { iapetus } from "./iapetus";
+import { miranda } from "./miranda";
+import { titania } from "./titania";
+import { charon } from "./charon";
 
 export type * from "./types";
 
@@ -34,4 +44,14 @@ export const CONTENT: Record<BodyId, PlanetContent> = {
   europa,
   titan,
   triton,
+  phobos,
+  deimos,
+  io,
+  ganymede,
+  callisto,
+  enceladus,
+  iapetus,
+  miranda,
+  titania,
+  charon,
 };
