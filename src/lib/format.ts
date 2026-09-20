@@ -1,4 +1,4 @@
-import { formatKm, formatPeriod, type Body } from "./planets";
+import { bodyById, formatKm, formatPeriod, type Body } from "./planets";
 import { lightTimeSeconds, orbitalSpeedKmS } from "./orbits";
 
 export function formatLightTime(seconds: number) {
@@ -18,9 +18,16 @@ export function bodyStats(b: Body): Stat[] {
   const retro = b.rotationPeriodDays < 0;
   const stats: Stat[] = [
     { label: "Radius", value: formatKm(b.radiusKm), hint: `${(b.radiusKm / 6371).toLocaleString("en-US", { maximumSignificantDigits: 3 })} × Earth` },
-    { label: "Mass", value: `${b.massEarths.toLocaleString("en-US")} × Earth` },
+    { label: "Mass", value: `${b.massEarths.toLocaleString("en-US", { maximumSignificantDigits: 3 })} × Earth` },
   ];
-  if (!isSun) {
+  const isMoon = b.kind === "moon";
+  if (isMoon && b.parent && b.orbitRadiusKm) {
+    const parent = bodyById(b.parent);
+    stats.push(
+      { label: `Distance from ${parent.name}`, value: formatKm(b.orbitRadiusKm), hint: `${(b.orbitRadiusKm / parent.radiusKm).toLocaleString("en-US", { maximumSignificantDigits: 3 })} × ${parent.name} radii` },
+      { label: "Orbital period", value: `${formatPeriod(b.orbitalPeriodDays)}${b.orbitalPeriodDays < 0 ? " (retrograde)" : ""}` },
+    );
+  } else if (!isSun) {
     stats.push(
       { label: "Distance from Sun", value: `${b.distanceAU} AU`, hint: `${Math.round(b.distanceAU * 149.6).toLocaleString("en-US")} million km` },
       { label: "Year length", value: formatPeriod(b.orbitalPeriodDays) },
@@ -33,9 +40,9 @@ export function bodyStats(b: Body): Stat[] {
     { label: "Mean temp.", value: `${b.meanTempC.toLocaleString("en-US")} °C` },
   );
   if (!isSun) {
+    if (!isMoon) stats.push({ label: "Known moons", value: String(b.moons) });
     stats.push(
-      { label: "Known moons", value: String(b.moons) },
-      { label: "Orbital speed", value: `${orbitalSpeedKmS(b.id as Exclude<Body["id"], "sun">, b.orbitalPeriodDays).toFixed(1)} km/s` },
+      { label: "Orbital speed", value: `${orbitalSpeedKmS(b).toFixed(1)} km/s` },
       { label: "Sunlight takes", value: formatLightTime(lightTimeSeconds(b.distanceAU)) },
     );
   }

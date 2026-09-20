@@ -115,7 +115,7 @@ function Clouds({ radius, segments }: { radius: number; segments: number }) {
  * Wrap it in a group carrying the pole quaternion for the correct tilt.
  */
 export function BodyMesh({ body, radius, meshRef, onSelect, segments = 48, sunBoost = 1, atmosphere = true }: Props) {
-  const texture = useTextureWithFallback(TEXTURE_FILES[body.id], body.id, () =>
+  const texture = useTextureWithFallback(TEXTURE_FILES[body.id] ?? null, body.id, () =>
     makeBodyTexture(body.id, body.texture, body.color, body.accent),
   );
   const isStar = body.id === "sun";

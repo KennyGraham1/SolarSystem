@@ -3,7 +3,8 @@
 import { useEffect, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { getTransform, useSolarStore } from "@/store/useSolarStore";
+import { bodyTransforms, getTransform, useSolarStore } from "@/store/useSolarStore";
+import { bodyById } from "@/lib/planets";
 import { COMPARE_CENTER_X } from "./CompareView";
 
 interface ControlsLike {
@@ -13,7 +14,15 @@ interface ControlsLike {
 
 export const DEFAULT_CAMERA = new THREE.Vector3(0, 62, 118);
 export const TRUE_DISTANCE_CAMERA = new THREE.Vector3(0, 480, 820);
-export const COMPARE_CAMERA = new THREE.Vector3(COMPARE_CENTER_X, 14, 88);
+export const COMPARE_CAMERA = new THREE.Vector3(COMPARE_CENTER_X, 16, 128);
+
+/** Moons that aren't drawn in the current view fly to their parent instead. */
+function targetTransform(id: Parameters<typeof getTransform>[0]) {
+  const own = bodyTransforms.get(id);
+  if (own) return own;
+  const b = bodyById(id);
+  return getTransform(b.kind === "moon" && b.parent ? b.parent : id);
+}
 
 const tmp = new THREE.Vector3();
 const goal = new THREE.Vector3();
@@ -41,7 +50,7 @@ export function CameraRig() {
 
   useEffect(() => {
     if (selected) {
-      prevPos.current.copy(getTransform(selected).position);
+      prevPos.current.copy(targetTransform(selected).position);
       flyIn.current = 1.6;
       flyHome.current = 0;
     }
@@ -57,7 +66,7 @@ export function CameraRig() {
     const k = 1 - Math.pow(0.002, delta); // frame-rate independent easing
 
     if (selected) {
-      const { position, radius } = getTransform(selected);
+      const { position, radius } = targetTransform(selected);
       tmp.copy(position).sub(prevPos.current);
       camera.position.add(tmp);
       prevPos.current.copy(position);

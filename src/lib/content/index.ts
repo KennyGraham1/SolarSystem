@@ -9,6 +9,12 @@ import { jupiter } from "./jupiter";
 import { saturn } from "./saturn";
 import { uranus } from "./uranus";
 import { neptune } from "./neptune";
+import { ceres } from "./ceres";
+import { pluto } from "./pluto";
+import { moon } from "./moon";
+import { europa } from "./europa";
+import { titan } from "./titan";
+import { triton } from "./triton";
 
 export type * from "./types";
 
@@ -22,4 +28,10 @@ export const CONTENT: Record<BodyId, PlanetContent> = {
   saturn,
   uranus,
   neptune,
+  ceres,
+  pluto,
+  moon,
+  europa,
+  titan,
+  triton,
 };

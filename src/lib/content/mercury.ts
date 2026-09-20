@@ -4,9 +4,9 @@ export const mercury: PlanetContent = {
   id: "mercury",
   tagline: "The smallest, fastest planet: a sun-scorched world of iron with ice hiding in its shadows.",
   intro: [
-    "Mercury is the innermost and smallest of the eight planets, only about 40% wider than the Moon and, at an average of 58 million km from the Sun, so close that from its surface the Sun would appear nearly three times larger than it does from Earth. It races around its orbit in just 88 Earth days, the shortest year in the solar system, which is why the ancient Romans named it after their swift-footed messenger god.",
+    "Mercury is the innermost and smallest of the eight planets, only about 40% wider than the Moon and, at an average of 58 million km from the Sun, so close that from its surface the Sun would appear two to three times larger than it does from Earth. It races around its orbit in just 88 Earth days, the shortest year in the solar system, which is why the ancient Romans named it after their swift-footed messenger god.",
     "Despite the heat, Mercury is not the hottest planet; without a real atmosphere to trap warmth, its daytime surface bakes at 430 °C while the night side plunges to −180 °C, the biggest temperature swing of any planet. In permanently shadowed craters at the poles it is cold enough that deposits of water ice have survived, a discovery confirmed by NASA's MESSENGER orbiter in 2012.",
-    "Beneath its cratered, Moon-like crust, Mercury is unusual: a huge iron core takes up about 85% of its radius, making it the second-densest planet after Earth. How a world this small ended up so metal-rich, and whether a giant impact or the young Sun stripped away its rocky outer layers, is one of the main questions the joint European-Japanese BepiColombo mission is arriving to answer, with its orbit insertion set for November 2026.",
+    "Beneath its cratered, Moon-like crust, Mercury is unusual: a huge iron core takes up about 85% of its radius, making it the second-densest planet after Earth. How a world this small ended up so metal-rich, and whether a giant impact or the young Sun stripped away its rocky outer layers, is one of the main questions the joint European-Japanese BepiColombo mission is arriving to answer: it jettisoned its transfer module on 3 September 2026 and its orbit insertion is set for 21 November 2026.",
   ],
   sections: [
     {
@@ -47,7 +47,7 @@ export const mercury: PlanetContent = {
       paragraphs: [
         "Mercury is hard to reach. A spacecraft falling toward the Sun picks up so much speed that it needs a great deal of fuel, or many gravity-assist flybys, to slow down enough to be captured. Only two spacecraft have visited so far. NASA's Mariner 10 made three flybys in 1974 and 1975, photographing about 45% of the surface. MESSENGER, launched in 2004, needed six planetary flybys before it became the first spacecraft to orbit Mercury in March 2011. It mapped the whole planet, measured its composition and magnetic field, and confirmed the polar ice before being deliberately crashed into the surface in April 2015.",
         "The current mission is BepiColombo, a joint venture between ESA and Japan's JAXA launched in October 2018. It actually consists of two orbiters travelling together: ESA's Mercury Planetary Orbiter, which will map the surface and interior, and JAXA's Mio, which will study the magnetosphere. To shed speed the stack made nine flybys, including six of Mercury between October 2021 and January 2025.",
-        "A problem with the spacecraft's electric thrusters in 2024 delayed arrival by almost a year. BepiColombo is now scheduled to fire its engine for orbit insertion around Mercury on 21 November 2026, with the two orbiters separating in December 2026 and full science operations beginning in 2027. Its data should finally reveal how Mercury's oversized core formed and why its magnetic field is lopsided.",
+        "A problem with the spacecraft's electric thrusters in 2024 delayed arrival by almost a year. The transfer module that carried the stack was jettisoned on 3 September 2026, and BepiColombo is now scheduled to fire its engine for orbit insertion around Mercury on 21 November 2026, with the two orbiters separating on 9 to 10 December 2026 and full science operations beginning in April 2027. Its data should finally reveal how Mercury's oversized core formed and why its magnetic field is lopsided.",
       ],
       highlight: "BepiColombo, launched in 2018, is set to enter orbit around Mercury on 21 November 2026 after nine gravity-assist flybys.",
     },
@@ -62,7 +62,7 @@ export const mercury: PlanetContent = {
     {
       title: "What you'd experience there",
       paragraphs: [
-        "Standing on Mercury you would weigh about 38% of your Earth weight, almost exactly the same as on Mars. The sky would be black even at noon, with stars visible if you shaded your eyes from the Sun, which would loom two to three times wider than from Earth and shine up to 11 times more intensely. Without air there is no sound and no weather, just a landscape of grey dust and sharp shadows.",
+        "Standing on Mercury you would weigh about 38% of your Earth weight, almost exactly the same as on Mars. The sky would be black even at noon, with stars visible if you shaded your eyes from the Sun, which would loom two to three times wider than from Earth and shine about seven times more intensely on average, and up to 11 times at perihelion. Without air there is no sound and no weather, just a landscape of grey dust and sharp shadows.",
         "The day is strange. Because Mercury spins three times for every two orbits, one full cycle from sunrise to sunrise takes 176 Earth days, twice the length of its year. Near perihelion, when Mercury moves fastest, the Sun's apparent motion across the sky briefly reverses: at some longitudes an observer would see the Sun rise, dip back below the horizon, and rise again.",
         "Survival would require enormous engineering. In the open, a suit would need to cope with 430 °C at midday and −180 °C at night. The most practical place to set up would be near the poles, where the Sun skims the horizon, temperatures are moderate, and water ice lies in the shadowed craters nearby.",
       ],
@@ -110,7 +110,7 @@ export const mercury: PlanetContent = {
     { year: "2015", title: "MESSENGER's final plunge", detail: "Out of fuel, the orbiter is crashed into Mercury on 30 April 2015 after more than 4,000 orbits." },
     { year: "2018", title: "BepiColombo launched", detail: "The ESA and JAXA mission, carrying two orbiters, lifts off from Kourou on 20 October 2018." },
     { year: "2021–25", title: "Six Mercury flybys", detail: "BepiColombo skims past Mercury six times, returning close-up images of the planet while shedding speed." },
-    { year: "2026", title: "Orbit insertion", detail: "BepiColombo is scheduled to brake into orbit around Mercury on 21 November 2026, releasing Mio in December ahead of science operations in 2027." },
+    { year: "2026", title: "Orbit insertion", detail: "After jettisoning its transfer module on 3 September, BepiColombo is scheduled to brake into orbit around Mercury on 21 November 2026, releasing Mio on 9 to 10 December ahead of science operations from April 2027." },
   ],
   comparisons: [
     { label: "Diameter", value: 4879, earth: 12742, unit: "km" },

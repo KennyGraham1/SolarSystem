@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Body } from "@/lib/planets";
+import { bodyById, type Body } from "@/lib/planets";
 
 /** Small calculator: what your weight and age would be on this body. */
 export function YouOnPlanet({ body }: { body: Body }) {
@@ -9,7 +9,9 @@ export function YouOnPlanet({ body }: { body: Body }) {
   const [age, setAge] = useState(12);
   const isSun = body.id === "sun";
   const weightHere = (weight * body.gravity) / 9.81;
-  const ageHere = isSun ? null : (age * 365.25) / body.orbitalPeriodDays;
+  // A moon's "year" is its parent planet's trip around the Sun.
+  const yearBody = body.kind === "moon" && body.parent ? bodyById(body.parent) : body;
+  const ageHere = isSun ? null : (age * 365.25) / yearBody.orbitalPeriodDays;
 
   return (
     <div className="mt-4 rounded-lg border border-white/10 bg-white/5 p-3">
@@ -44,7 +46,7 @@ export function YouOnPlanet({ body }: { body: Body }) {
             {" "}
             and be{" "}
             <span className="font-semibold text-amber-200">
-              {ageHere >= 10 ? Math.round(ageHere) : ageHere.toFixed(1)} {body.name} years
+              {ageHere >= 10 ? Math.round(ageHere) : ageHere.toFixed(1)} {yearBody.name} years
             </span>{" "}
             old
           </>

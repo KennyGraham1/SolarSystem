@@ -10,6 +10,7 @@ interface SolarState {
   paused: boolean;
   showOrbits: boolean;
   showLabels: boolean;
+  showBelts: boolean;
   trueDistances: boolean;
   view: ViewMode;
   selected: BodyId | null;
@@ -27,7 +28,7 @@ interface SolarState {
 
   setSpeed: (speed: number) => void;
   togglePaused: () => void;
-  toggle: (key: "showOrbits" | "showLabels" | "trueDistances") => void;
+  toggle: (key: "showOrbits" | "showLabels" | "trueDistances" | "showBelts") => void;
   setView: (view: ViewMode) => void;
   select: (id: BodyId | null) => void;
   setQuizOpen: (open: boolean) => void;
@@ -43,6 +44,7 @@ export const useSolarStore = create<SolarState>((set) => ({
   paused: false,
   showOrbits: true,
   showLabels: true,
+  showBelts: true,
   trueDistances: false,
   view: "orbit",
   selected: null,

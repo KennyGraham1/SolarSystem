@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { BODIES, type Body } from "@/lib/planets";
+import { HELIOCENTRIC_BODIES, MOONS, poleTilt, type Body } from "@/lib/planets";
 import { getTransform, useSolarStore } from "@/store/useSolarStore";
 import { Label } from "./Label";
 import { usePoleQuaternion } from "./Planet";
@@ -13,12 +13,13 @@ const EARTH_UNIT = 0.5; // Earth radius in scene units for the lineup
 
 /** Static row layout: each body placed after the previous one with a small gap. */
 const LAYOUT = (() => {
-  let x = -8; // right edge of the previous body
-  return BODIES.map((body, i) => {
+  let x = -16; // right edge of the previous body
+  return [...HELIOCENTRIC_BODIES, ...MOONS].map((body, i) => {
     const r = (body.radiusKm / 6_371) * EARTH_UNIT;
     const extent = body.rings ? r * body.rings.outer : r; // rings need room too
     if (i === 0) return { body, r, x: x - r }; // Sun: only its right limb is in view
-    const gap = r < 1 ? 6 : 2;
+    const gap = r < 1 ? 7 : 2.5;
+    if (body.kind === "moon" && i > 0 && [...HELIOCENTRIC_BODIES, ...MOONS][i - 1].kind !== "moon") x += 6; // breathing room before the moons
     x += gap + extent;
     const entry = { body, r, x };
     x += extent;
@@ -46,7 +47,7 @@ function CompareBody({ body, radius, x }: { body: Body; radius: number; x: numbe
   const selected = useSolarStore((s) => s.selected);
   const select = useSolarStore((s) => s.select);
   const isStar = body.id === "sun";
-  const pole = usePoleQuaternion(body.axialTiltDeg, body.poleLonDeg);
+  const pole = usePoleQuaternion(poleTilt(body), body.poleLonDeg);
 
   useFrame((_, delta) => {
     if (meshRef.current) meshRef.current.rotation.y += delta * 0.15;
@@ -56,7 +57,7 @@ function CompareBody({ body, radius, x }: { body: Body; radius: number; x: numbe
   });
 
   const ratio = body.radiusKm / 6_371;
-  const sub = `${isStar ? Math.round(ratio) : ratio >= 1 ? ratio.toFixed(1) : ratio.toFixed(2)}× Earth wide`;
+  const sub = `${isStar ? Math.round(ratio) : ratio >= 1 ? ratio.toFixed(1) : ratio.toFixed(2)}× Earth`;
 
   return (
     <group position={[x, 0, 0]}>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BODIES, type Body } from "@/lib/planets";
+import { BODIES, DWARF_PLANETS, MOONS, PLANETS, SUN, bodyHref, type Body } from "@/lib/planets";
 import { useSolarStore } from "@/store/useSolarStore";
 
 export function bodyDot(b: Body) {
@@ -17,8 +17,12 @@ export function PlanetList() {
   const select = useSolarStore((s) => s.select);
 
   return (
-    <nav aria-label="Bodies" className="absolute left-4 top-1/2 z-20 hidden -translate-y-1/2 flex-col gap-0.5 md:flex">
-      {BODIES.map((b) => {
+    <nav aria-label="Bodies" className="absolute left-4 top-1/2 z-20 hidden max-h-[calc(100dvh-13rem)] -translate-y-1/2 flex-col gap-0.5 overflow-y-auto md:flex">
+      {GROUPS.map(([heading, bodies], gi) => [
+        <div key={heading} className={`eyebrow px-2.5 pb-0.5 ${gi === 0 ? "" : "pt-2.5"}`}>
+          {heading}
+        </div>,
+        ...bodies.map((b) => {
         const on = selected === b.id;
         return (
           <div key={b.id} className={`group flex items-center rounded-full pr-1 transition ${on ? "bg-white/12" : "hover:bg-white/8"}`}>
@@ -30,7 +34,7 @@ export function PlanetList() {
               {b.name}
             </button>
             <Link
-              href={`/planet/${b.id}`}
+              href={bodyHref(b)}
               aria-label={`Open the ${b.name} page`}
               title={`Explore ${b.name} in depth`}
               className={`flex h-6 w-6 items-center justify-center rounded-full text-[13px] text-white/50 transition hover:bg-amber-300/20 hover:text-amber-200 ${
@@ -41,10 +45,17 @@ export function PlanetList() {
             </Link>
           </div>
         );
-      })}
+        }),
+      ])}
     </nav>
   );
 }
+
+const GROUPS: [string, Body[]][] = [
+  ["Sun & planets", [SUN, ...PLANETS]],
+  ["Dwarf planets", DWARF_PLANETS],
+  ["Moons", MOONS],
+];
 
 /** Mobile: horizontal chip strip. */
 export function PlanetChips() {

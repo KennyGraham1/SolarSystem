@@ -18,6 +18,8 @@ Open http://localhost:3000.
 - **Click any body** (or use the list on the left) to fly to it and open a fact panel: radius, mass, distance, year/day length, axial tilt, gravity, temperature, moons, orbital speed, light travel time from the Sun, "did you know" facts, and a **"You on this planet"** calculator (your weight and age there).
 - **Time controls** – pause (Space), change speed from hours-per-second to years-per-second, pick any date or jump back to today.
 - **Toggles** – orbit lines, labels, and *True distances* (real AU ratios, which shows how empty the solar system really is).
+- **Dwarf planets and belts** – Ceres and Pluto orbit on their real (JPL SBDB) orbits — Pluto's is tilted 17° and crosses inside Neptune's — with the asteroid belt (2.1–3.3 AU) and Kuiper belt (30–50 AU) drawn as point clouds (toggle *Belts*).
+- **Moons** – the Moon, Europa, Titan and Triton have their own pages (`/moon/<id>`) and appear in the size comparison; selecting one in the explorer flies to its parent planet.
 - **Size comparison** – every body lined up at its true relative size.
 - **Quiz** – 8 randomly generated questions built from the planet data.
 - **Esc** resets the camera.
@@ -32,6 +34,10 @@ Open http://localhost:3000.
 - Orbits and positions use the JPL approximate Keplerian elements, good to a fraction of a degree between 1800 and 2050. Outside that range they degrade gracefully but are no longer accurate.
 - Planet spin is capped at ¼ turn per second for readability when the clock runs fast; orbital motion is always exact.
 - Planet surfaces use 2K photographic texture maps where available (see credits); if a texture file is missing or fails to load, the app falls back to a procedurally generated surface for that body.
+
+## Performance
+
+Phones, low-core machines and users who prefer reduced motion get a lighter render: 1K textures (`public/textures/1k`, generated from the 2K originals), no post-processing bloom, 1× pixel ratio, fewer stars and belt points. See `src/lib/device.ts`.
 
 ## Structure
 

@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import * as THREE from "three";
 import type { BodyId } from "./planets";
+import { currentTier } from "./device";
 
 /**
  * Photographic textures (Solar System Scope, CC BY 4.0) served from
  * /public/textures. Every lookup is optional: if a file is missing or fails to
  * decode, callers keep using the procedural canvas texture instead.
  */
-export const TEXTURE_FILES: Record<BodyId | "moon" | "earthClouds" | "saturnRing" | "milkyWay", string> = {
+export const TEXTURE_FILES: Partial<Record<BodyId, string>> & Record<"earthClouds" | "saturnRing" | "milkyWay", string> = {
   sun: "/textures/2k_sun.jpg",
   mercury: "/textures/2k_mercury.jpg",
   venus: "/textures/2k_venus_atmosphere.jpg",
@@ -20,6 +21,7 @@ export const TEXTURE_FILES: Record<BodyId | "moon" | "earthClouds" | "saturnRing
   uranus: "/textures/2k_uranus.jpg",
   neptune: "/textures/2k_neptune.jpg",
   moon: "/textures/2k_moon.jpg",
+  ceres: "/textures/2k_ceres_fictional.jpg",
   earthClouds: "/textures/2k_earth_clouds.jpg",
   saturnRing: "/textures/2k_saturn_ring_alpha.png",
   milkyWay: "/textures/2k_stars_milky_way.jpg",
@@ -28,13 +30,26 @@ export const TEXTURE_FILES: Record<BodyId | "moon" | "earthClouds" | "saturnRing
 const loader = typeof window !== "undefined" ? new THREE.TextureLoader() : null;
 const pending = new Map<string, Promise<THREE.Texture | null>>();
 
+/** Low-tier devices get the 1K copies in /textures/1k (falling back to 2K if missing). */
+function tieredUrl(url: string) {
+  return currentTier() === "low" ? url.replace("/textures/2k_", "/textures/1k/1k_") : url;
+}
+
 /** Loads a texture once and caches it; resolves to null (never rejects) on any failure. */
 export function loadTexture(url: string): Promise<THREE.Texture | null> {
   if (!loader) return Promise.resolve(null);
   let p = pending.get(url);
   if (!p) {
-    p = new Promise<THREE.Texture | null>((resolve) => {
-      loader.load(
+    const small = tieredUrl(url);
+    p = small !== url ? loadOnce(small).then((t) => t ?? loadOnce(url)) : loadOnce(url);
+    pending.set(url, p);
+  }
+  return p;
+}
+
+function loadOnce(url: string): Promise<THREE.Texture | null> {
+  return new Promise<THREE.Texture | null>((resolve) => {
+      loader!.load(
         url,
         (tex) => {
           const img = tex.image as { width?: number; height?: number } | undefined;
@@ -47,10 +62,7 @@ export function loadTexture(url: string): Promise<THREE.Texture | null> {
         undefined,
         () => resolve(null),
       );
-    });
-    pending.set(url, p);
-  }
-  return p;
+  });
 }
 
 const procedural = new Map<string, THREE.Texture>();

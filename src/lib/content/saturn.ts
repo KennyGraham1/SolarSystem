@@ -5,7 +5,7 @@ export const saturn: PlanetContent = {
   tagline: "The jewel of the solar system: a planet lighter than water, crowned by rings of ice.",
   intro: [
     "Saturn is the sixth planet from the Sun and the second largest, a gas giant nine times wider than Earth whose rings make it the most instantly recognisable object in the sky. Every giant planet has rings, but Saturn's are in a different league: bright, broad and complex, stretching some 280,000 km from edge to edge yet in most places only about 10 m thick, made of countless chunks of almost pure water ice.",
-    "The planet beneath is a puffed-up ball of hydrogen and helium so light that its average density is less than that of water: it would float in a bathtub big enough to hold it. It spins in just 10.7 hours, flattening itself noticeably at the poles, and its winds are among the fastest in the solar system, exceeding 1,800 km/h near the equator. At its north pole sits a bizarre six-sided jet stream, the hexagon, wider than two Earths.",
+    "The planet beneath is a puffed-up ball of hydrogen and helium so light that its average density is less than that of water: it would float in a bathtub big enough to hold it. It spins in just 10.7 hours, flattening itself noticeably at the poles, and its winds are among the fastest in the solar system, reaching about 1,800 km/h near the equator. At its north pole sits a bizarre six-sided jet stream, the hexagon, wider than two Earths.",
     "Saturn also has the largest known family of moons, with 293 confirmed as of August 2026, ranging from boulders to Titan, a moon bigger than Mercury with a thick orange atmosphere and lakes of liquid methane. Another, tiny Enceladus, sprays jets of salty water from a hidden ocean into space. NASA's Cassini spacecraft spent 13 years exploring this system, and its Dragonfly rotorcraft is being built to fly through Titan's skies in the 2030s.",
   ],
   sections: [
@@ -13,16 +13,16 @@ export const saturn: PlanetContent = {
       title: "Structure and interior",
       paragraphs: [
         "Saturn is about 96% hydrogen and 3% helium by number of molecules, similar to Jupiter but smaller and less compressed. Its interior follows the same pattern: gaseous hydrogen giving way to liquid, then, around halfway down, to metallic hydrogen where the pressure is high enough to free the electrons. Because Saturn is less massive, its metallic layer is thinner and its magnetic field is weaker than Jupiter's, about 580 times Earth's but almost perfectly aligned with the rotation axis, an unexplained oddity.",
-        "The core was once pictured as a compact ball of rock and ice. In 2021 scientists used Cassini's observations of ripples in the rings, stirred by oscillations deep inside the planet, as a kind of seismograph. They found that Saturn, like Jupiter, has a 'fuzzy' core of rock and ice diluted into the hydrogen, spread across the inner 60% of the planet and amounting to about 55 Earth masses.",
-        "Saturn radiates about 2.5 times as much energy as it receives from the Sun, more than can be explained by leftover heat alone. The extra is thought to come from 'helium rain': in Saturn's cooler interior, helium separates from hydrogen and falls as droplets toward the centre, releasing gravitational energy on the way. The centre may reach about 11,700 °C. Saturn's mean density of 0.69 g/cm³ makes it the only planet less dense than water.",
+        "The core was once pictured as a compact ball of rock and ice. In 2021 scientists used Cassini's observations of ripples in the rings, stirred by oscillations deep inside the planet, as a kind of seismograph. They found that Saturn, like Jupiter, has a 'fuzzy' core of rock and ice diluted into the hydrogen, spread across the inner 60% of the planet's radius. This fuzzy core region holds about 55 Earth masses of material, of which roughly 17 Earth masses are rock and ice and the rest hydrogen and helium.",
+        "Saturn radiates roughly two to two-and-a-half times as much energy as it receives from the Sun, more than can be explained by leftover heat alone. The extra is thought to come from 'helium rain': in Saturn's cooler interior, helium separates from hydrogen and falls as droplets toward the centre, releasing gravitational energy on the way. The centre may reach about 11,700 °C. Saturn's mean density of 0.69 g/cm³ makes it the only planet less dense than water.",
       ],
-      highlight: "Saturn's rings act as a seismograph: ripples in them revealed a fuzzy core of about 55 Earth masses.",
+      highlight: "Saturn's rings act as a seismograph: ripples in them revealed a fuzzy core spanning 60% of the planet's radius.",
     },
     {
       title: "Atmosphere: haze, jet streams and the hexagon",
       paragraphs: [
         "Saturn's cloud bands are like Jupiter's but muted, hidden under a high haze of ammonia crystals that gives the planet its butterscotch colour. The layers below are similar, with ammonia, ammonium hydrosulphide and water clouds stacked in order of depth, but because Saturn is colder they lie deeper. Near the equator a broad jet stream blows eastward at up to 1,800 km/h, and alternating jets ring the planet at higher latitudes.",
-        "The north pole holds Saturn's strangest feature: a six-sided jet stream about 29,000 km across, discovered by Voyager in the early 1980s and photographed in detail by Cassini. It has held its shape for decades. Laboratory experiments show that a fast jet stream on a rotating body can naturally settle into a polygon; the hexagon is a standing wave, with a hurricane-like vortex spinning at its centre. Each pole also has a hot polar vortex and aurorae.",
+        "The north pole holds Saturn's strangest feature: a six-sided jet stream about 29,000 km across, first spotted in Voyager images from 1980 and 1981 and photographed in detail by Cassini. It has held its shape for decades. Laboratory experiments show that a fast jet stream on a rotating body can naturally settle into a polygon; the hexagon is a standing wave, with a hurricane-like vortex spinning at its centre. Each pole also has a hot polar vortex and aurorae.",
         "Roughly once every Saturn year (about 30 Earth years) a Great White Spot erupts: a storm of water clouds bursting up from deep below and spreading round the planet. Cassini watched the 2010 to 2011 storm grow until its tail wrapped all the way around Saturn, generating lightning bursts 10,000 times stronger than Earth's. Occasional 'ring rain' of charged water ice falling from the rings also alters the chemistry of the upper atmosphere.",
       ],
     },
@@ -30,8 +30,8 @@ export const saturn: PlanetContent = {
       title: "The rings",
       paragraphs: [
         "Saturn's rings are made of trillions of pieces of water ice, from dust grains to house-sized boulders, each on its own orbit. They are labelled with letters in order of discovery: the bright A and B rings, separated by the 4,800-km Cassini Division; the fainter inner C ring; the tenuous D ring closest to the planet; the narrow, knotted F ring shepherded by the moons Prometheus and Pandora; and the diffuse G and E rings further out. The E ring is fed by the icy plumes of Enceladus.",
-        "Although the system spans more than 280,000 km, the main rings are astonishingly thin, mostly around 10 m and rarely more than a kilometre. Cassini revealed that they are shaped by gravity in intricate ways: moonlets carve gaps and propeller-shaped wakes, the moon Daphnis raises vertical waves at the edge of the Keeler Gap that cast shadows kilometres high, and spiral density waves ripple through the rings in resonance with the moons and with Saturn's own interior.",
-        "Where the rings came from and how old they are is hotly debated. Cassini's final measurements showed that the rings are surprisingly light, about 40% of the mass of the moon Mimas, and unusually clean of dark dust, which suggests they may have formed only 100 to 400 million years ago, perhaps from a moon torn apart by Saturn's tides. Others argue they could be as old as Saturn and simply kept clean. Either way they are not permanent: ring material is raining onto the planet, and in a few hundred million years they may be gone.",
+        "Although the system spans more than 280,000 km, the main rings are astonishingly thin, mostly around 10 m and rarely more than a kilometre. Cassini revealed that they are shaped by gravity in intricate ways: moonlets carve gaps and propeller-shaped wakes, the moon Daphnis raises vertical waves up to a few kilometres high at the edge of the Keeler Gap that cast long shadows across the rings, and spiral density waves ripple through the rings in resonance with the moons and with Saturn's own interior.",
+        "Where the rings came from and how old they are is hotly debated. Cassini's final measurements showed that the rings are surprisingly light, about 40% of the mass of the moon Mimas, and unusually clean of dark dust, which suggests they may have formed only 100 to 400 million years ago, perhaps from a moon torn apart by Saturn's tides. Others argue they could be as old as Saturn and simply kept clean. Either way they are not permanent: ring material is raining onto the planet, and estimates suggest they could be gone within 100 to 300 million years.",
       ],
       highlight: "Saturn's rings are 280,000 km wide but mostly only about 10 m thick: scaled to a sheet of paper, they would be over a kilometre across.",
     },
@@ -48,22 +48,22 @@ export const saturn: PlanetContent = {
       title: "Exploration and missions",
       paragraphs: [
         "Pioneer 11 made the first flyby of Saturn in September 1979, passing through the ring plane and discovering the F ring. Voyager 1 followed in November 1980 and Voyager 2 in August 1981, revealing the rings' fine structure, the hexagon, the shepherd moons and Titan's thick atmosphere. Voyager 1 was deliberately steered close to Titan, a choice that flung it out of the plane of the planets and ended its planetary tour.",
-        "The Cassini-Huygens mission, a partnership between NASA, ESA and the Italian Space Agency, launched in 1997 and entered orbit around Saturn on 1 July 2004. Over 13 years and nearly 300 orbits it mapped the rings and moons, dropped the Huygens probe onto Titan in January 2005 (still the most distant landing ever made), discovered the plumes of Enceladus and watched a full change of seasons. On 15 September 2017, low on fuel, Cassini was flown into Saturn's atmosphere to protect Enceladus and Titan from contamination, sending data until its final seconds.",
+        "The Cassini-Huygens mission, a partnership between NASA, ESA and the Italian Space Agency, launched in 1997 and entered orbit around Saturn on 1 July 2004. Over 13 years and nearly 300 orbits it mapped the rings and moons, dropped the Huygens probe onto Titan in January 2005 (still the most distant landing ever made), discovered the plumes of Enceladus and watched the seasons change from northern winter to northern summer. On 15 September 2017, low on fuel, Cassini was flown into Saturn's atmosphere to protect Enceladus and Titan from contamination, sending data until its final seconds.",
         "The next mission is NASA's Dragonfly, a nuclear-powered rotorcraft the size of a car that will fly from site to site across Titan's dunes, sampling the organic-rich surface and searching for the chemistry of life's origins. It is scheduled to launch in July 2028 and arrive in 2034. Meanwhile the James Webb Space Telescope keeps watch on Saturn's seasons and aurorae, and in March 2025 the rings turned edge-on to Earth and briefly seemed to vanish, an event that happens roughly every 15 years.",
       ],
     },
     {
       title: "Name, myth and history",
       paragraphs: [
-        "Saturn is the most distant planet visible to the naked eye and the slowest-moving, taking almost 30 years to circle the sky, which is why the Romans named it after the god of time and agriculture, the father of Jupiter (the Greeks called him Cronus). Saturday is Saturn's day. In many cultures its slow crawl earned it a reputation as a sombre, ancient planet; the word 'saturnine' still means gloomy.",
-        "Galileo saw something odd beside Saturn in 1610 but could not make it out with his small telescope; he thought the planet had 'ears' or two companion bodies, and was baffled when they vanished in 1612 as the rings turned edge-on. Christiaan Huygens, with a better instrument, solved the puzzle in 1655: Saturn is 'surrounded by a thin, flat ring, nowhere touching'. He also discovered Titan the same year. Giovanni Cassini found the gap that bears his name in 1675 and four more moons.",
+        "Saturn is the most distant planet visible to the naked eye and the slowest-moving, taking almost 30 years to circle the sky, and the Romans named it after their god of agriculture and wealth, the father of Jupiter (the Greeks called him Cronus). Saturday is Saturn's day. In many cultures its slow crawl earned it a reputation as a sombre, ancient planet; the word 'saturnine' still means gloomy.",
+        "Galileo saw something odd beside Saturn in 1610 but could not make it out with his small telescope; he thought the planet had 'ears' or two companion bodies, and was baffled when they vanished in 1612 as the rings turned edge-on. Christiaan Huygens, with a better instrument, discovered Titan in 1655 and by 1659 had solved the puzzle: Saturn is 'surrounded by a thin, flat ring, nowhere touching'. Giovanni Cassini found the gap that bears his name in 1675 and four more moons.",
         "In 1859 James Clerk Maxwell proved mathematically that a solid ring would tear itself apart, so the rings must be made of countless small particles, a conclusion confirmed spectroscopically in 1895. The composition, water ice, was established by ground-based infrared observations in 1970, and the spacecraft era then revealed the rings' structure in ever-finer detail.",
       ],
     },
     {
       title: "What you'd experience there",
       paragraphs: [
-        "Like Jupiter, Saturn has no surface. Hovering at the cloud tops, where the pressure equals Earth's, you would feel a gravity slightly stronger than Earth's (10.4 m/s²), a surprisingly modest figure for so vast a planet, because Saturn's material is spread so thinly. The temperature there would be about −140 °C. Below you the haze would thicken into ammonia clouds, then deeper, warmer layers, then liquid hydrogen; no probe has ever descended.",
+        "Like Jupiter, Saturn has no surface. Hovering at the cloud tops, where the pressure equals Earth's, you would feel a gravity slightly stronger than Earth's (10.4 m/s²), a surprisingly modest figure for so vast a planet, because Saturn's material is spread so thinly. The temperature there would be about −140 °C. Below you the haze would thicken into ammonia clouds, then deeper, warmer layers, then liquid hydrogen; apart from Cassini's final plunge in 2017, which sampled only the outermost layers, no probe has ever descended.",
         "The view would be the reward. From Saturn's northern hemisphere in summer the rings arch across the sky as a vast, bright band, casting a broad shadow onto the clouds on the day side and glowing by reflected light at night. From the equator, though, you would see them only edge-on, as a thin bright line. The Sun would appear as a small, intense disc a tenth the width it shows from Earth, giving about 1% of the light, roughly like a dim, overcast day.",
         "A day lasts only 10 hours 40 minutes, and the winds screaming past at over 1,000 km/h would make any position in the atmosphere violent. On Titan, by contrast, you could walk around in a warm suit and an air supply: the pressure is 1.5 bar, the gravity is one-seventh of Earth's, and with wings strapped to your arms you could fly.",
       ],
@@ -73,16 +73,16 @@ export const saturn: PlanetContent = {
   layers: [
     {
       name: "Dilute core",
-      description: "Rock and ice blended into the surrounding hydrogen rather than a compact ball, detected by ripples it excites in the rings.",
+      description: "Rock and ice blended into the surrounding metallic hydrogen rather than a compact ball, extending to about 60% of the radius and detected by ripples it excites in the rings.",
       color: "#f0e4c4",
-      radiusFraction: 0.3,
-      detail: "Rock and ice diluted into hydrogen, ~55 Earth masses, ~11,700 °C",
+      radiusFraction: 0.6,
+      detail: "Rock and ice (~17 Earth masses) diluted into hydrogen, ~11,700 °C at the centre",
     },
     {
       name: "Metallic hydrogen",
-      description: "A layer of electrically conducting hydrogen, thinner than Jupiter's, that generates Saturn's magnetic field.",
+      description: "Electrically conducting hydrogen surrounding and pervading the dilute core; the region where Saturn's magnetic field is generated.",
       color: "#d4b57a",
-      radiusFraction: 0.6,
+      radiusFraction: 0.7,
       detail: "Liquid metallic hydrogen, several million atmospheres",
     },
     {
@@ -102,7 +102,7 @@ export const saturn: PlanetContent = {
   ],
   timeline: [
     { year: "1610", title: "Galileo's puzzle", detail: "Galileo sees strange bulges beside Saturn but cannot resolve them; they vanish in 1612 as the rings turn edge-on." },
-    { year: "1655", title: "Huygens explains the ring", detail: "Christiaan Huygens identifies a thin, flat ring around Saturn and discovers its largest moon, Titan." },
+    { year: "1655", title: "Huygens finds Titan, then explains the ring", detail: "Christiaan Huygens discovers Saturn's largest moon, Titan, and by 1659 has identified a thin, flat ring around the planet." },
     { year: "1675", title: "The Cassini Division", detail: "Giovanni Cassini spots the dark gap between the A and B rings and goes on to find four moons." },
     { year: "1859", title: "Rings shown to be particles", detail: "James Clerk Maxwell proves a solid ring would break apart, so the rings must be countless small bodies." },
     { year: "1979", title: "Pioneer 11 flyby", detail: "The first spacecraft to reach Saturn crosses the ring plane and discovers the F ring." },

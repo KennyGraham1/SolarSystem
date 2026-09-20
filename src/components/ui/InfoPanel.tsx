@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { bodyById, type Body } from "@/lib/planets";
+import { bodyById, type Body, bodyHref } from "@/lib/planets";
 import { bodyStats } from "@/lib/format";
 import { useSolarStore } from "@/store/useSolarStore";
 import { YouOnPlanet } from "./YouOnPlanet";
@@ -54,7 +54,7 @@ function Panel({ body: b }: { body: Body }) {
             <div className="eyebrow">{b.type}</div>
             <h2 className="font-display flex items-center gap-2.5 text-2xl font-semibold tracking-tight text-white">
               <span className="h-3.5 w-3.5 shrink-0 rounded-full" style={bodyDot(b)} />
-              <Link href={`/planet/${b.id}`} className="truncate transition hover:text-amber-200" title={`Open the ${b.name} page`}>
+              <Link href={bodyHref(b)} className="truncate transition hover:text-amber-200" title={`Open the ${b.name} page`}>
                 {b.name}
               </Link>
             </h2>
@@ -64,7 +64,7 @@ function Panel({ body: b }: { body: Body }) {
           </button>
         </div>
 
-        <Link href={`/planet/${b.id}`} className="btn-accent mb-4 w-full justify-center">
+        <Link href={bodyHref(b)} className="btn-accent mb-4 w-full justify-center">
           Explore {b.name} in depth →
         </Link>
 

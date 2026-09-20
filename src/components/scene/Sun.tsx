@@ -3,7 +3,7 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { SUN, SUN_VISUAL_RADIUS, spinStep } from "@/lib/planets";
+import { SUN, SUN_VISUAL_RADIUS, poleTilt, spinStep } from "@/lib/planets";
 import { makeGlowTexture } from "@/lib/textures";
 import { getTransform, useSolarStore } from "@/store/useSolarStore";
 import { Label } from "./Label";
@@ -16,7 +16,7 @@ export function Sun() {
   const showLabels = useSolarStore((s) => s.showLabels);
   const selected = useSolarStore((s) => s.selected);
   const select = useSolarStore((s) => s.select);
-  const pole = usePoleQuaternion(SUN.axialTiltDeg, SUN.poleLonDeg);
+  const pole = usePoleQuaternion(poleTilt(SUN), SUN.poleLonDeg);
 
   useFrame((_, delta) => {
     const { speed, paused } = useSolarStore.getState();

@@ -9,6 +9,7 @@ import { makeGlowTexture } from "@/lib/textures";
 import { BodyMesh } from "@/components/scene/BodyMesh";
 import { MilkyWay } from "@/components/scene/MilkyWay";
 import { Effects } from "@/components/scene/Effects";
+import { useDeviceTier } from "@/lib/device";
 
 function SpinningBody({ body }: { body: Body }) {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -42,16 +43,17 @@ function SpinningBody({ body }: { body: Body }) {
 export default function HeroScene({ body }: { body: Body }) {
   const isStar = body.id === "sun";
   const cam: [number, number, number] = body.rings ? [0, 1.1, 5.6] : [0, 0.35, 3.6];
+  const low = useDeviceTier() === "low";
   return (
-    <Canvas camera={{ position: cam, fov: 38, near: 0.1, far: 8000 }} dpr={[1, 1.5]} gl={{ antialias: true, powerPreference: "high-performance" }}>
+    <Canvas camera={{ position: cam, fov: 38, near: 0.1, far: 8000 }} dpr={low ? 1 : [1, 1.5]} gl={{ antialias: !low, powerPreference: "high-performance" }}>
       <color attach="background" args={["#03050c"]} />
       <MilkyWay dim={0.45} />
-      <Stars radius={600} depth={200} count={3000} factor={4} saturation={0} fade speed={0.2} />
+      <Stars radius={600} depth={200} count={low ? 1200 : 3000} factor={4} saturation={0} fade speed={0.2} />
       <ambientLight intensity={isStar ? 0.6 : 0.18} />
       <directionalLight position={[-6, 3, 5]} intensity={2.4} color="#fff4dc" />
       <SpinningBody body={body} />
       <OrbitControls enableZoom={false} enablePan={false} enableDamping dampingFactor={0.08} rotateSpeed={0.6} />
-      {isStar && <Effects />}
+      {isStar && !low && <Effects />}
     </Canvas>
   );
 }

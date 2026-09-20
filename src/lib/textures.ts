@@ -20,10 +20,13 @@ const css = (c: THREE.Color, a = 1) =>
   `rgba(${Math.round(c.r * 255)},${Math.round(c.g * 255)},${Math.round(c.b * 255)},${a})`;
 
 function ellipse(ctx: CanvasRenderingContext2D, x: number, y: number, rx: number, ry: number, fill: string) {
-  ctx.beginPath();
-  ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
   ctx.fillStyle = fill;
-  ctx.fill();
+  // Draw wrapped copies near the left/right edges so the texture tiles seamlessly around the sphere.
+  for (const dx of x - rx < 0 ? [0, W] : x + rx > W ? [0, -W] : [0]) {
+    ctx.beginPath();
+    ctx.ellipse(x + dx, y, rx, ry, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
 }
 
 function paintBands(ctx: CanvasRenderingContext2D, rand: () => number, base: THREE.Color, accent: THREE.Color, redSpot: boolean) {

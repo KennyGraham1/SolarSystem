@@ -22,7 +22,10 @@ function formatSpeed(s: number) {
   return `${(s * 24).toFixed(1)} h / s`;
 }
 
-const toInputDate = (d: Date) => d.toISOString().slice(0, 10);
+// Format in LOCAL time to match how the input's value is parsed (local noon);
+// toISOString() would shift the day for users far east or west of UTC.
+const toInputDate = (d: Date) =>
+  `${d.getFullYear().toString().padStart(4, "0")}-${(d.getMonth() + 1).toString().padStart(2, "0")}-${d.getDate().toString().padStart(2, "0")}`;
 
 function SimDate() {
   // Poll the fast-changing clock at a readable rate instead of every frame.
@@ -77,7 +80,7 @@ function Toggle({ label, on, onClick }: { label: string; on: boolean; onClick: (
 }
 
 export function ControlBar() {
-  const { speed, paused, showOrbits, showLabels, trueDistances, view } = useSolarStore();
+  const { speed, paused, showOrbits, showLabels, showBelts, trueDistances, view } = useSolarStore();
   const setSpeed = useSolarStore((s) => s.setSpeed);
   const togglePaused = useSolarStore((s) => s.togglePaused);
   const toggle = useSolarStore((s) => s.toggle);
@@ -146,13 +149,14 @@ export function ControlBar() {
               <div className="flex flex-wrap gap-1.5">
                 <Toggle label="Orbits" on={showOrbits} onClick={() => toggle("showOrbits")} />
                 <Toggle label="Labels" on={showLabels} onClick={() => toggle("showLabels")} />
-                <Toggle label="True distances" on={trueDistances} onClick={() => toggle("trueDistances")} />
+                <Toggle label="Belts" on={showBelts} onClick={() => toggle("showBelts")} />
+              <Toggle label="True distances" on={trueDistances} onClick={() => toggle("trueDistances")} />
               </div>
             </>
           ) : (
             <>
               <p className="flex-1 text-xs text-white/70">
-                Every body is drawn at its <span className="text-white">true relative size</span> (Earth = 1). Click one to learn more.
+                Every body is drawn at its <span className="text-white">true relative diameter</span> (Earth = 1). Click one to learn more.
               </p>
               <Toggle label="Labels" on={showLabels} onClick={() => toggle("showLabels")} />
             </>

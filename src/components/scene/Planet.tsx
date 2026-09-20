@@ -4,10 +4,8 @@ import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Line } from "@react-three/drei";
 import * as THREE from "three";
-import { MOON, poleDirection, spinStep, visualRadius, type Body, type BodyId } from "@/lib/planets";
+import { bodyById, poleDirection, poleTilt, spinStep, visualRadius, type Body, type BodyId } from "@/lib/planets";
 import { heliocentricPosition, orbitPath, toScene } from "@/lib/orbits";
-import { makeBodyTexture } from "@/lib/textures";
-import { TEXTURE_FILES, useTextureWithFallback } from "@/lib/textureLoader";
 import { currentJD, getTransform, useSolarStore } from "@/store/useSolarStore";
 import { Label } from "./Label";
 import { BodyMesh } from "./BodyMesh";
@@ -33,10 +31,16 @@ export function usePoleQuaternion(obliquityDeg: number, poleLonDeg: number) {
   }, [obliquityDeg, poleLonDeg]);
 }
 
-function Moon({ parentRadius }: { parentRadius: number }) {
+const MOON = bodyById("moon");
+
+/** Earth's Moon, drawn far closer than reality so it stays visible. Selectable. */
+function Moon({ parentRadius, parentPosition }: { parentRadius: number; parentPosition: React.RefObject<THREE.Group | null> }) {
   const ref = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
-  const texture = useTextureWithFallback(TEXTURE_FILES.moon, "moon", () => makeBodyTexture("moon", MOON.texture, MOON.color, MOON.accent));
+  const select = useSolarStore((s) => s.select);
+  const selected = useSolarStore((s) => s.selected);
+  const showLabels = useSolarStore((s) => s.showLabels);
+  const pole = usePoleQuaternion(poleTilt(MOON), MOON.poleLonDeg);
   const r = parentRadius * (MOON.radiusKm / 6_371); // true size ratio to Earth
   const d = parentRadius * 2.6;
   useFrame(() => {
@@ -45,13 +49,18 @@ function Moon({ parentRadius }: { parentRadius: number }) {
     ref.current?.position.set(Math.cos(a) * d, 0, -Math.sin(a) * d);
     // Tidally locked: one rotation per orbit keeps the same face toward Earth.
     if (meshRef.current) meshRef.current.rotation.y = a;
+    if (ref.current && parentPosition.current) {
+      const t = getTransform("moon");
+      t.position.copy(parentPosition.current.position).add(ref.current.position);
+      t.radius = r;
+    }
   });
   return (
     <group ref={ref}>
-      <mesh ref={meshRef}>
-        <sphereGeometry args={[r, 24, 24]} />
-        <meshStandardMaterial map={texture} roughness={1} />
-      </mesh>
+      <group quaternion={pole}>
+        <BodyMesh body={MOON} radius={r} meshRef={meshRef} onSelect={() => select("moon")} segments={24} atmosphere={false} />
+      </group>
+      {showLabels && selected === "moon" && <Label text="Moon" y={r * 1.3 + 0.15} />}
     </group>
   );
 }
@@ -68,7 +77,7 @@ export function Planet({ body }: { body: Body }) {
   const select = useSolarStore((s) => s.select);
 
   const radius = visualRadius(body.radiusKm);
-  const pole = usePoleQuaternion(body.axialTiltDeg, body.poleLonDeg);
+  const pole = usePoleQuaternion(poleTilt(body), body.poleLonDeg);
 
   useFrame((_, delta) => {
     const state = useSolarStore.getState();
@@ -88,9 +97,9 @@ export function Planet({ body }: { body: Body }) {
       {showOrbits && <OrbitPath id={id} trueDistances={trueDistances} color={body.color} active={isActive} />}
       <group ref={orbitRef}>
         <group quaternion={pole}>
-          <BodyMesh body={body} radius={radius} meshRef={meshRef} onSelect={() => select(body.id)} segments={48} />
+          <BodyMesh body={body} radius={radius} meshRef={meshRef} onSelect={() => select(body.id)} segments={body.kind === "dwarf" ? 24 : 48} />
         </group>
-        {body.id === "earth" && <Moon parentRadius={radius} />}
+        {body.id === "earth" && <Moon parentRadius={radius} parentPosition={orbitRef} />}
         {showLabels && !isActive && <Label text={body.name} y={radius * (body.rings ? 1.6 : 1.3) + 0.25} />}
       </group>
     </group>

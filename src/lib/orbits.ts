@@ -3,13 +3,31 @@
  * Elements and method: JPL "Approximate Positions of the Planets"
  * (Standish), valid 1800–2050 AD to within a fraction of a degree.
  */
-import type { BodyId } from "./planets";
-import { orbitRadius } from "./planets";
+import type { Body, BodyId } from "./planets";
+import { bodyById, orbitRadius } from "./planets";
 
 // [a (AU), e, I (deg), L (deg), long. perihelion (deg), long. asc. node (deg)]
 // followed by the per-Julian-century rates of change of the same six values.
 type Elements = [number, number, number, number, number, number];
-const ELEMENTS: Record<Exclude<BodyId, "sun">, { base: Elements; rate: Elements }> = {
+type ElementSet = { base: Elements; rate: Elements };
+
+const J2000 = 2451545.0;
+
+/**
+ * Convert JPL Small-Body Database osculating elements (a, e, i, Ω, ω, mean
+ * anomaly M at an epoch, mean motion n °/day) into the same mean-element form
+ * as the planets: only the mean longitude changes with time.
+ */
+function fromOsculating(a: number, e: number, i: number, node: number, w: number, M: number, epochJD: number, n: number): ElementSet {
+  const longPeri = node + w;
+  const L0 = M + longPeri - n * (epochJD - J2000);
+  return { base: [a, e, i, L0, longPeri, node], rate: [0, 0, 0, n * 36525, 0, 0] };
+}
+
+/** Bodies with their own heliocentric orbit (moons resolve to their parent). */
+type HelioId = "mercury" | "venus" | "earth" | "mars" | "jupiter" | "saturn" | "uranus" | "neptune" | "ceres" | "pluto";
+
+const ELEMENTS: Record<HelioId, ElementSet> = {
   mercury: {
     base: [0.38709927, 0.20563593, 7.00497902, 252.2503235, 77.45779628, 48.33076593],
     rate: [0.00000037, 0.00001906, -0.00594749, 149472.67411175, 0.16047689, -0.12534081],
@@ -42,9 +60,19 @@ const ELEMENTS: Record<Exclude<BodyId, "sun">, { base: Elements; rate: Elements 
     base: [30.06992276, 0.00859048, 1.77004347, -55.12002969, 44.96476227, 131.78422574],
     rate: [0.00026291, 0.00005105, 0.00035372, 218.45945325, -0.32241464, -0.00508664],
   },
+  // JPL SBDB solutions (fetched Sept 2026). Osculating elements drift slowly
+  // under planetary perturbations, so accuracy is best within a few decades of the epoch.
+  ceres: fromOsculating(2.765552595, 0.0796922951, 10.588027802, 80.248626820, 73.294214530, 274.419346376, 2461200.5, 0.214304450648),
+  pluto: fromOsculating(39.588629385, 0.2518378779, 17.147711410, 110.292384054, 113.709001516, 38.683663473, 2457588.5, 0.003956838956),
 };
 
-const J2000 = 2451545.0;
+/** The body whose heliocentric orbit determines `id`'s position (a moon's parent). */
+function helioId(id: BodyId): HelioId | null {
+  if (id === "sun") return null;
+  const b = bodyById(id);
+  const target = b.kind === "moon" && b.parent ? b.parent : id;
+  return target === "sun" ? null : (target as HelioId);
+}
 const DEG = Math.PI / 180;
 
 export function dateToJD(date: Date) {
@@ -72,7 +100,7 @@ function eccentricAnomaly(M: number, e: number) {
   return E;
 }
 
-function elementsAt(id: Exclude<BodyId, "sun">, jd: number) {
+function elementsAt(id: HelioId, jd: number) {
   const T = (jd - J2000) / 36525;
   const { base, rate } = ELEMENTS[id];
   return base.map((v, i) => v + rate[i] * T) as Elements;
@@ -99,16 +127,20 @@ function positionFromElements(el: Elements, meanAnomalyDeg: number): AUPosition 
   };
 }
 
-/** Heliocentric ecliptic position (AU) of a planet at a Julian date. */
-export function heliocentricPosition(id: Exclude<BodyId, "sun">, jd: number): AUPosition {
-  const el = elementsAt(id, jd);
+/** Heliocentric ecliptic position (AU) of a body at a Julian date (moons: their parent's). */
+export function heliocentricPosition(id: BodyId, jd: number): AUPosition {
+  const h = helioId(id);
+  if (!h) return { x: 0, y: 0, z: 0 };
+  const el = elementsAt(h, jd);
   const [, , , L, longPeri] = el;
   return positionFromElements(el, L - longPeri);
 }
 
 /** Points along the full ellipse at the given epoch, for drawing the orbit path. */
-export function orbitPath(id: Exclude<BodyId, "sun">, jd: number, segments = 256): AUPosition[] {
-  const el = elementsAt(id, jd);
+export function orbitPath(id: BodyId, jd: number, segments = 256): AUPosition[] {
+  const h = helioId(id);
+  if (!h) return [];
+  const el = elementsAt(h, jd);
   const pts: AUPosition[] = [];
   for (let i = 0; i <= segments; i++) pts.push(positionFromElements(el, (i / segments) * 360));
   return pts;
@@ -125,13 +157,19 @@ export function toScene(p: AUPosition, trueDistances: boolean): [number, number,
   return [p.x * f, p.z * f, -p.y * f];
 }
 
-/** Mean orbital speed in km/s: ellipse perimeter (Ramanujan) over the period. */
-export function orbitalSpeedKmS(id: Exclude<BodyId, "sun">, periodDays: number) {
-  const [a, e] = ELEMENTS[id].base;
+/** Mean orbital speed in km/s: ellipse perimeter (Ramanujan) over the period.
+ *  Moons: circular speed around their parent. */
+export function orbitalSpeedKmS(body: Pick<Body, "id" | "kind" | "orbitalPeriodDays" | "orbitRadiusKm">) {
+  if (body.kind === "moon" && body.orbitRadiusKm) {
+    return (2 * Math.PI * body.orbitRadiusKm) / (Math.abs(body.orbitalPeriodDays) * 86_400);
+  }
+  const h = helioId(body.id);
+  if (!h) return 0;
+  const [a, e] = ELEMENTS[h].base;
   const b = a * Math.sqrt(1 - e * e);
-  const h = ((a - b) / (a + b)) ** 2;
-  const perimeterAU = Math.PI * (a + b) * (1 + (3 * h) / (10 + Math.sqrt(4 - 3 * h)));
-  return (perimeterAU * 149_597_870.7) / (periodDays * 86_400);
+  const hh = ((a - b) / (a + b)) ** 2;
+  const perimeterAU = Math.PI * (a + b) * (1 + (3 * hh) / (10 + Math.sqrt(4 - 3 * hh)));
+  return (perimeterAU * 149_597_870.7) / (body.orbitalPeriodDays * 86_400);
 }
 
 /** Light travel time from the Sun in seconds. */

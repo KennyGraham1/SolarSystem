@@ -7,14 +7,29 @@ export type BodyId =
   | "jupiter"
   | "saturn"
   | "uranus"
-  | "neptune";
+  | "neptune"
+  | "ceres"
+  | "pluto"
+  | "moon"
+  | "europa"
+  | "titan"
+  | "triton";
+
+export type BodyKind = "star" | "planet" | "dwarf" | "moon";
 
 export type TextureKind = "star" | "rocky" | "earth" | "banded" | "smooth";
 
 export interface Body {
   id: BodyId;
   name: string;
-  type: "Star" | "Terrestrial planet" | "Gas giant" | "Ice giant";
+  kind: BodyKind;
+  type: "Star" | "Terrestrial planet" | "Gas giant" | "Ice giant" | "Dwarf planet" | "Moon";
+  /** For moons: the body they orbit. */
+  parent?: BodyId;
+  /** For moons: mean orbital radius around the parent, in km. */
+  orbitRadiusKm?: number;
+  /** Where a dwarf planet lives, for the page subtitle. */
+  region?: string;
   color: string;
   accent: string;
   texture: TextureKind;
@@ -30,6 +45,9 @@ export interface Body {
   axialTiltDeg: number;
   /** Ecliptic longitude toward which the rotation pole leans (from IAU pole RA/Dec). */
   poleLonDeg: number;
+  /** Angle between the rotation pole and the ecliptic pole, when it differs
+   *  materially from `axialTiltDeg` (bodies on inclined orbits, e.g. Pluto). */
+  poleTiltEclipticDeg?: number;
   moons: number;
   gravity: number;
   meanTempC: number;
@@ -45,6 +63,7 @@ export const BODIES: Body[] = [
   {
     id: "sun",
     name: "Sun",
+    kind: "star",
     type: "Star",
     color: "#ffb347",
     accent: "#ff6a00",
@@ -72,6 +91,7 @@ export const BODIES: Body[] = [
   {
     id: "mercury",
     name: "Mercury",
+    kind: "planet",
     type: "Terrestrial planet",
     color: "#9c9a92",
     accent: "#5d5a55",
@@ -99,6 +119,7 @@ export const BODIES: Body[] = [
   {
     id: "venus",
     name: "Venus",
+    kind: "planet",
     type: "Terrestrial planet",
     color: "#e6c98a",
     accent: "#b8894a",
@@ -126,6 +147,7 @@ export const BODIES: Body[] = [
   {
     id: "earth",
     name: "Earth",
+    kind: "planet",
     type: "Terrestrial planet",
     color: "#2468d6",
     accent: "#3f9b4a",
@@ -153,6 +175,7 @@ export const BODIES: Body[] = [
   {
     id: "mars",
     name: "Mars",
+    kind: "planet",
     type: "Terrestrial planet",
     color: "#c1562d",
     accent: "#7a3418",
@@ -180,6 +203,7 @@ export const BODIES: Body[] = [
   {
     id: "jupiter",
     name: "Jupiter",
+    kind: "planet",
     type: "Gas giant",
     color: "#d8b48a",
     accent: "#9c6b45",
@@ -207,6 +231,7 @@ export const BODIES: Body[] = [
   {
     id: "saturn",
     name: "Saturn",
+    kind: "planet",
     type: "Gas giant",
     color: "#e3cf9a",
     accent: "#b39a63",
@@ -235,6 +260,7 @@ export const BODIES: Body[] = [
   {
     id: "uranus",
     name: "Uranus",
+    kind: "planet",
     type: "Ice giant",
     color: "#9fdbe6",
     accent: "#6fb9cc",
@@ -263,6 +289,7 @@ export const BODIES: Body[] = [
   {
     id: "neptune",
     name: "Neptune",
+    kind: "planet",
     type: "Ice giant",
     color: "#3b5fd9",
     accent: "#2a3fa8",
@@ -287,21 +314,204 @@ export const BODIES: Body[] = [
     lesson:
       "The outermost planet takes 165 years to orbit — it has completed only one lap since it was discovered in 1846. Switch on 'True distances' to see how far out it really is: light from the Sun takes over 4 hours to reach it.",
   },
+  {
+    id: "ceres",
+    name: "Ceres",
+    kind: "dwarf",
+    type: "Dwarf planet",
+    region: "Asteroid belt",
+    color: "#9a9389",
+    accent: "#5c5751",
+    texture: "rocky",
+    radiusKm: 469.7,
+    distanceAU: 2.766,
+    orbitalPeriodDays: 1_679.9,
+    rotationPeriodDays: 0.378,
+    axialTiltDeg: 4,
+    poleLonDeg: 11,
+    moons: 0,
+    gravity: 0.28,
+    meanTempC: -105,
+    massEarths: 0.00016,
+    description:
+      "The largest object in the asteroid belt and the only dwarf planet in the inner solar system. Ceres is a dark, water-rich world with a briny subsurface and bright salt deposits in its craters.",
+    facts: [
+      "Ceres holds about a quarter of the asteroid belt's total mass, yet it is only 940 km across.",
+      "The bright spots in Occator Crater are sodium carbonate left behind by evaporating brine.",
+      "NASA's Dawn spacecraft orbited Ceres from 2015 to 2018, the first mission to a dwarf planet.",
+    ],
+    lesson:
+      "Between Mars and Jupiter lies the asteroid belt, and Ceres is its king. It was the first asteroid discovered, in 1801, and was reclassified as a dwarf planet in 2006: round under its own gravity, but not massive enough to clear its neighbourhood of other bodies.",
+  },
+  {
+    id: "pluto",
+    name: "Pluto",
+    kind: "dwarf",
+    type: "Dwarf planet",
+    region: "Kuiper belt",
+    color: "#d9c3a8",
+    accent: "#8b6a4f",
+    texture: "rocky",
+    radiusKm: 1_188.3,
+    distanceAU: 39.48,
+    orbitalPeriodDays: 90_560,
+    rotationPeriodDays: -6.387,
+    axialTiltDeg: 122.5,
+    poleLonDeg: 137,
+    poleTiltEclipticDeg: 112.8,
+    moons: 5,
+    gravity: 0.62,
+    meanTempC: -229,
+    massEarths: 0.0022,
+    description:
+      "The best-known world of the Kuiper belt: a small, icy dwarf planet with a heart-shaped nitrogen glacier, towering water-ice mountains and a thin, hazy blue atmosphere. Its orbit is tilted 17° and so stretched that it sometimes comes closer to the Sun than Neptune.",
+    facts: [
+      "Pluto was reclassified from planet to dwarf planet in 2006 after similar Kuiper belt objects were found.",
+      "Its largest moon, Charon, is half Pluto's size; the pair orbit a point in the space between them.",
+      "New Horizons flew past in July 2015, revealing the nitrogen-ice plain Sputnik Planitia.",
+    ],
+    lesson:
+      "Look at Pluto's orbit: it is tilted 17° out of the plane the planets share and stretched so much that from 1979 to 1999 Pluto was closer to the Sun than Neptune. It is one of thousands of icy bodies in the Kuiper belt, which is why it is now called a dwarf planet.",
+  },
+  {
+    id: "moon",
+    name: "Moon",
+    kind: "moon",
+    type: "Moon",
+    parent: "earth",
+    orbitRadiusKm: 384_400,
+    color: "#b9b6ae",
+    accent: "#6e6a63",
+    texture: "rocky",
+    radiusKm: 1_737.4,
+    distanceAU: 1.0,
+    orbitalPeriodDays: 27.32,
+    rotationPeriodDays: 27.32,
+    axialTiltDeg: 6.68,
+    poleLonDeg: 214,
+    poleTiltEclipticDeg: 1.54,
+    moons: 0,
+    gravity: 1.62,
+    meanTempC: -20,
+    massEarths: 0.0123,
+    description:
+      "Earth's only natural satellite and the only other world humans have walked on. The Moon is tidally locked, so the same cratered face always looks back at us, and its gravity drives our ocean tides.",
+    facts: [
+      "The Moon is about a quarter of Earth's diameter, an unusually large moon for its planet.",
+      "Twelve astronauts walked on the Moon between 1969 and 1972; Artemis aims to return people this decade.",
+      "It probably formed from debris after a Mars-sized body struck the young Earth 4.5 billion years ago.",
+    ],
+    lesson:
+      "Watch the Moon circle Earth: it turns exactly once per orbit, so we only ever see one side. It is drawn far closer here than in reality, where 30 Earths would fit in the gap between the two.",
+  },
+  {
+    id: "europa",
+    name: "Europa",
+    kind: "moon",
+    type: "Moon",
+    parent: "jupiter",
+    orbitRadiusKm: 670_900,
+    color: "#d8cfbf",
+    accent: "#8f6a4a",
+    texture: "smooth",
+    radiusKm: 1_560.8,
+    distanceAU: 5.203,
+    orbitalPeriodDays: 3.551,
+    rotationPeriodDays: 3.551,
+    axialTiltDeg: 0.1,
+    poleLonDeg: 248,
+    moons: 0,
+    gravity: 1.31,
+    meanTempC: -170,
+    massEarths: 0.008,
+    description:
+      "A smooth, ice-covered moon of Jupiter slightly smaller than our Moon. Beneath its cracked shell lies a salty ocean holding perhaps twice as much water as all of Earth's oceans, making it a leading candidate for life beyond Earth.",
+    facts: [
+      "Europa's surface is one of the smoothest in the solar system, with almost no large craters.",
+      "Tidal flexing by Jupiter keeps the ocean liquid and may power hydrothermal vents on its floor.",
+      "NASA's Europa Clipper, launched in 2024, will make dozens of flybys after arriving in 2030.",
+    ],
+    lesson:
+      "Europa is squeezed and stretched by Jupiter's gravity on every 3.5-day orbit. That tidal heating melts an ocean beneath the ice, which is why a moon this far from the Sun is one of the most promising places to look for life.",
+  },
+  {
+    id: "titan",
+    name: "Titan",
+    kind: "moon",
+    type: "Moon",
+    parent: "saturn",
+    orbitRadiusKm: 1_221_870,
+    color: "#d9a447",
+    accent: "#9c6b1f",
+    texture: "smooth",
+    radiusKm: 2_574.7,
+    distanceAU: 9.537,
+    orbitalPeriodDays: 15.945,
+    rotationPeriodDays: 15.945,
+    axialTiltDeg: 0.3,
+    poleLonDeg: 79,
+    moons: 0,
+    gravity: 1.35,
+    meanTempC: -179,
+    massEarths: 0.0225,
+    description:
+      "Saturn's largest moon and the only moon with a thick atmosphere. Under its orange haze lie rivers, lakes and seas of liquid methane and ethane, the only open liquid on any surface besides Earth's.",
+    facts: [
+      "Titan is bigger than the planet Mercury, though only 40% as massive.",
+      "ESA's Huygens probe landed there in 2005, the most distant landing ever made.",
+      "NASA's Dragonfly rotorcraft is due to launch in 2028 and fly across Titan's dunes from 2034.",
+    ],
+    lesson:
+      "Titan has weather like Earth's, but with methane in the role of water: clouds, rain, rivers and seas at −180 °C. Its air is denser than ours, and with the low gravity a person could fly by flapping strapped-on wings.",
+  },
+  {
+    id: "triton",
+    name: "Triton",
+    kind: "moon",
+    type: "Moon",
+    parent: "neptune",
+    orbitRadiusKm: 354_759,
+    color: "#d7c9c2",
+    accent: "#8f7a78",
+    texture: "rocky",
+    radiusKm: 1_353.4,
+    distanceAU: 30.07,
+    orbitalPeriodDays: -5.877,
+    rotationPeriodDays: 5.877,
+    axialTiltDeg: 0,
+    poleLonDeg: 319,
+    poleTiltEclipticDeg: 28,
+    moons: 0,
+    gravity: 0.78,
+    meanTempC: -235,
+    massEarths: 0.0036,
+    description:
+      "Neptune's largest moon orbits backwards, a sign it was captured from the Kuiper belt. It is one of the coldest places known, yet Voyager 2 saw geysers of nitrogen erupting from its frozen surface.",
+    facts: [
+      "Triton is the only large moon in the solar system that orbits opposite to its planet's spin.",
+      "Its surface temperature of about −235 °C is among the lowest ever measured on a world.",
+      "It is slowly spiralling inward and will be torn apart into a ring system in a few billion years.",
+    ],
+    lesson:
+      "Triton orbits Neptune the 'wrong' way, which no moon that formed alongside its planet would do. The best explanation is that it was once a dwarf planet like Pluto, captured when it strayed too close.",
+  },
 ];
 
 export const SUN = BODIES[0];
-export const PLANETS = BODIES.filter((b) => b.id !== "sun");
-
-export const MOON = {
-  name: "Moon",
-  color: "#b9b6ae",
-  accent: "#6e6a63",
-  texture: "rocky" as TextureKind,
-  radiusKm: 1_737.4,
-  orbitalPeriodDays: 27.32,
-};
+/** The eight major planets, in order from the Sun. */
+export const PLANETS = BODIES.filter((b) => b.kind === "planet");
+export const DWARF_PLANETS = BODIES.filter((b) => b.kind === "dwarf");
+export const MOONS = BODIES.filter((b) => b.kind === "moon");
+/** Everything that orbits the Sun directly and is drawn in the orbit view. */
+export const ORBITING_BODIES = BODIES.filter((b) => b.kind === "planet" || b.kind === "dwarf");
+/** Sun + planets + dwarfs: the bodies with heliocentric orbits (pages, tour, nav). */
+export const HELIOCENTRIC_BODIES = BODIES.filter((b) => b.kind !== "moon");
+export const TOUR_IDS: BodyId[] = ["sun", "mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune", "pluto"];
 
 export const bodyById = (id: BodyId) => BODIES.find((b) => b.id === id)!;
+export const isBodyId = (id: string): id is BodyId => BODIES.some((b) => b.id === id);
+export const bodyHref = (b: Pick<Body, "id" | "kind">) => (b.kind === "moon" ? `/moon/${b.id}` : `/planet/${b.id}`);
+export const moonsOf = (id: BodyId) => MOONS.filter((m) => m.parent === id);
 
 // ---- Scene scaling helpers -------------------------------------------------
 
@@ -309,7 +519,7 @@ export const SUN_VISUAL_RADIUS = 3.2;
 
 /** Visual (square-root compressed) radius so every planet is visible. */
 export function visualRadius(radiusKm: number) {
-  return 0.7 * Math.sqrt(radiusKm / 6_371);
+  return Math.max(0.24, 0.7 * Math.sqrt(radiusKm / 6_371));
 }
 
 /** Orbit radius in scene units. `trueDistances` keeps real AU ratios. */
@@ -333,7 +543,11 @@ export function spinStep(rotationPeriodDays: number, speed: number, delta: numbe
  * Direction of the rotation pole in scene coordinates (x = ecliptic x,
  * y = ecliptic north, z = −ecliptic y) from obliquity and pole longitude.
  */
+/** Tilt of the rotation pole from the ecliptic pole, for rendering. */
+export const poleTilt = (b: Pick<Body, "axialTiltDeg" | "poleTiltEclipticDeg">) => b.poleTiltEclipticDeg ?? b.axialTiltDeg;
+
 export function poleDirection(obliquityDeg: number, poleLonDeg: number): [number, number, number] {
+  // obliquityDeg here is measured from the ecliptic pole (see Body.poleTiltEclipticDeg).
   const lat = ((90 - obliquityDeg) * Math.PI) / 180;
   const lon = (poleLonDeg * Math.PI) / 180;
   return [Math.cos(lat) * Math.cos(lon), Math.sin(lat), -Math.cos(lat) * Math.sin(lon)];
