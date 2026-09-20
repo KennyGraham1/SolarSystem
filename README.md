@@ -19,7 +19,7 @@ Open http://localhost:3000.
 - **Time controls** – pause (Space), change speed from hours-per-second to years-per-second, pick any date or jump back to today.
 - **Toggles** – orbit lines, labels, and *True distances* (real AU ratios, which shows how empty the solar system really is).
 - **Dwarf planets and belts** – Ceres and Pluto orbit on their real (JPL SBDB) orbits — Pluto's is tilted 17° and crosses inside Neptune's — with the asteroid belt (2.1–3.3 AU) and Kuiper belt (30–50 AU) drawn as point clouds (toggle *Belts*).
-- **Moons** – the Moon, Europa, Titan and Triton have their own pages (`/moon/<id>`) and appear in the size comparison; selecting one in the explorer flies to its parent planet.
+- **Moons** – all 14 moons orbit their planets in the 3D view (distances compressed so they fit; periods real but capped for readability; retrograde Triton goes the other way; all tidally locked). Click one to fly to it.
 - **Compare** – every body at its true relative size, or ranked with bars by mass, gravity, day length, year length, temperature, distance from the Sun or number of moons; filter to Sun & planets, dwarfs & moons, or everything.
 - **Zoom out** – a ten-step cosmic zoom from the inner solar system through the Oort cloud, the nearest stars (real 3D positions), the Milky Way, the Local Group and Laniakea to the observable universe, with captions and scale bars (`src/components/universe/`).
 - **Learn** (`/learn`) – eight interactive explainers with slider-driven diagrams: day/night & sunsets, seasons, Moon phases, solar and lunar eclipses (with upcoming dates), tides, retrograde motion, and why the sky is blue / stars twinkle.

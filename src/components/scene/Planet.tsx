@@ -4,7 +4,7 @@ import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Line } from "@react-three/drei";
 import * as THREE from "three";
-import { bodyById, poleDirection, poleTilt, spinStep, visualRadius, type Body, type BodyId } from "@/lib/planets";
+import { moonsOf, poleDirection, poleTilt, spinStep, visualRadius, type Body, type BodyId } from "@/lib/planets";
 import { heliocentricPosition, orbitPath, toScene } from "@/lib/orbits";
 import { currentJD, getTransform, useSolarStore } from "@/store/useSolarStore";
 import { Label } from "./Label";
@@ -31,36 +31,61 @@ export function usePoleQuaternion(obliquityDeg: number, poleLonDeg: number) {
   }, [obliquityDeg, poleLonDeg]);
 }
 
-const MOON = bodyById("moon");
+/** Fastest a moon is allowed to circle its planet on screen (revolutions per real second). */
+const MAX_MOON_REV_PER_SEC = 0.35;
 
-/** Earth's Moon, drawn far closer than reality so it stays visible. Selectable. */
-function Moon({ parentRadius, parentPosition }: { parentRadius: number; parentPosition: React.RefObject<THREE.Group | null> }) {
+/**
+ * A moon orbiting its planet. Orbits are drawn far closer than reality so the
+ * system fits on screen; periods are real (capped for readability like planet
+ * spin), retrograde moons go the other way, and all are tidally locked.
+ */
+function MoonOrbit({ moon, index, parent, parentRadius, parentPosition }: { moon: Body; index: number; parent: Body; parentRadius: number; parentPosition: React.RefObject<THREE.Group | null> }) {
   const ref = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
+  const angle = useRef((index * 2.4) % TWO_PI); // spread the moons out
   const select = useSolarStore((s) => s.select);
   const selected = useSolarStore((s) => s.selected);
   const showLabels = useSolarStore((s) => s.showLabels);
-  const pole = usePoleQuaternion(poleTilt(MOON), MOON.poleLonDeg);
-  const r = parentRadius * (MOON.radiusKm / 6_371); // true size ratio to Earth
-  const d = parentRadius * 2.6;
-  useFrame(() => {
-    const { simDays } = useSolarStore.getState();
-    const a = (TWO_PI * simDays) / MOON.orbitalPeriodDays;
+  const pole = usePoleQuaternion(poleTilt(moon), moon.poleLonDeg);
+
+  // Size: square-root compressed relative to the parent, with a floor so tiny moons stay clickable.
+  const r = Math.max(0.09, parentRadius * Math.sqrt(moon.radiusKm / parent.radiusKm) * 0.5);
+  // Distance: just outside the rings, then one lane per moon.
+  const first = parent.rings ? parent.rings.outer + 0.5 : 2.4;
+  const d = parentRadius * (first + index * 0.85) + r;
+  const period = moon.orbitalPeriodDays; // negative = retrograde
+  const orbitPoints = useMemo(() => {
+    const pts: THREE.Vector3[] = [];
+    for (let i = 0; i <= 96; i++) pts.push(new THREE.Vector3(Math.cos((i / 96) * TWO_PI) * d, 0, -Math.sin((i / 96) * TWO_PI) * d));
+    return pts;
+  }, [d]);
+
+  useFrame((_, delta) => {
+    const { speed, paused } = useSolarStore.getState();
+    if (!paused) {
+      const rev = Math.min(speed / Math.abs(period), MAX_MOON_REV_PER_SEC);
+      angle.current += Math.sign(period) * rev * TWO_PI * delta;
+    }
+    const a = angle.current;
     ref.current?.position.set(Math.cos(a) * d, 0, -Math.sin(a) * d);
-    // Tidally locked: one rotation per orbit keeps the same face toward Earth.
-    if (meshRef.current) meshRef.current.rotation.y = a;
+    if (meshRef.current) meshRef.current.rotation.y = a; // tidally locked
     if (ref.current && parentPosition.current) {
-      const t = getTransform("moon");
+      const t = getTransform(moon.id);
       t.position.copy(parentPosition.current.position).add(ref.current.position);
-      t.radius = r;
+      t.radius = Math.max(r, 0.3); // keep the fly-in from getting too close to a tiny moon
     }
   });
+
+  const family = selected === moon.id || selected === parent.id || moonsOf(parent.id).some((m) => m.id === selected);
   return (
-    <group ref={ref}>
-      <group quaternion={pole}>
-        <BodyMesh body={MOON} radius={r} meshRef={meshRef} onSelect={() => select("moon")} segments={24} atmosphere={false} />
+    <group>
+      {family && <Line points={orbitPoints} color={moon.color} transparent opacity={selected === moon.id ? 0.5 : 0.18} lineWidth={1} />}
+      <group ref={ref}>
+        <group quaternion={pole}>
+          <BodyMesh body={moon} radius={r} meshRef={meshRef} onSelect={() => select(moon.id)} segments={20} atmosphere={false} />
+        </group>
+        {showLabels && family && selected !== moon.id && <Label text={moon.name} y={r * 1.3 + 0.12} />}
       </group>
-      {showLabels && selected === "moon" && <Label text="Moon" y={r * 1.3 + 0.15} />}
     </group>
   );
 }
@@ -99,7 +124,9 @@ export function Planet({ body }: { body: Body }) {
         <group quaternion={pole}>
           <BodyMesh body={body} radius={radius} meshRef={meshRef} onSelect={() => select(body.id)} segments={body.kind === "dwarf" ? 24 : 48} />
         </group>
-        {body.id === "earth" && <Moon parentRadius={radius} parentPosition={orbitRef} />}
+        {moonsOf(body.id).map((m, i) => (
+          <MoonOrbit key={m.id} moon={m} index={i} parent={body} parentRadius={radius} parentPosition={orbitRef} />
+        ))}
         {showLabels && !isActive && <Label text={body.name} y={radius * (body.rings ? 1.6 : 1.3) + 0.25} />}
       </group>
     </group>
