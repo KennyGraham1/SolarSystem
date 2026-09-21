@@ -57,5 +57,10 @@ Phones, low-core machines and users who prefer reduced motion get a lighter rend
 
 ## Credits
 
-- Textures: [Solar System Scope](https://www.solarsystemscope.com/textures/), CC BY 4.0 (files in `public/textures/`).
+- Planet, Moon and Milky Way textures: [Solar System Scope](https://www.solarsystemscope.com/textures/), CC BY 4.0 (files in `public/textures/`).
+- Moon, dwarf-planet and Pluto/Charon textures: [USGS Astrogeology Science Center](https://astrogeology.usgs.gov/search) global mosaics (public domain; NASA/JPL/USGS data), downsampled to 2K. Greyscale mosaics are tinted to approximate true colour. Coverage gaps in the originals are real limits of the spacecraft data: Charon's and Pluto's far sides are low resolution, and Triton's never-imaged northern hemisphere is filled with a blurred mirror of the imaged terrain so the globe has no black cap.
+  - Io: Galileo SSI / Voyager colour merged mosaic, 1 km · Ganymede: Voyager / Galileo SSI colour mosaic, 1.4 km · Europa: Voyager / Galileo SSI mosaic, 500 m · Callisto: Voyager / Galileo SSI mosaic, 1 km
+  - Enceladus: Cassini ISS mosaic, 110 m · Iapetus: Cassini / Voyager mosaic, 783 m · Titan: Cassini ISS near-infrared surface mosaic, 4 km (the haze is added in the renderer)
+  - Triton: Voyager 2 colour mosaic with global fill, 600 m · Phobos: Viking mosaic (DLR control) · Pluto and Charon: New Horizons global mosaics, 300 m (July 2017) · Ceres: Dawn Framing Camera global mosaic (DLR), 20 px/deg
+  - Deimos, Miranda and Titania have no complete global map and use procedural surfaces.
 - Physical data: NASA planetary fact sheets; orbital elements: JPL.

@@ -82,7 +82,7 @@ function MoonOrbit({ moon, index, parent, parentRadius, parentPosition }: { moon
       {family && <Line points={orbitPoints} color={moon.color} transparent opacity={selected === moon.id ? 0.5 : 0.18} lineWidth={1} />}
       <group ref={ref}>
         <group quaternion={pole}>
-          <BodyMesh body={moon} radius={r} meshRef={meshRef} onSelect={() => select(moon.id)} segments={20} atmosphere={false} />
+          <BodyMesh body={moon} radius={r} meshRef={meshRef} onSelect={() => select(moon.id)} segments={24} />
         </group>
         {showLabels && family && selected !== moon.id && <Label text={moon.name} y={r * 1.3 + 0.12} />}
       </group>

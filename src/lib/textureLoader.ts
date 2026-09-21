@@ -6,9 +6,12 @@ import type { BodyId } from "./planets";
 import { currentTier } from "./device";
 
 /**
- * Photographic textures (Solar System Scope, CC BY 4.0) served from
- * /public/textures. Every lookup is optional: if a file is missing or fails to
- * decode, callers keep using the procedural canvas texture instead.
+ * Photographic textures served from /public/textures: planets from Solar
+ * System Scope (CC BY 4.0); moons, Pluto and Ceres from USGS Astrogeology
+ * global mosaics (public domain; greyscale mosaics tinted to true colour).
+ * Every lookup is optional: if a file is missing or fails to decode, callers
+ * keep using the procedural canvas texture instead. Deimos, Miranda and
+ * Titania have no full global map, so they stay procedural.
  */
 export const TEXTURE_FILES: Partial<Record<BodyId, string>> & Record<"earthClouds" | "saturnRing" | "milkyWay", string> = {
   sun: "/textures/2k_sun.jpg",
@@ -21,7 +24,18 @@ export const TEXTURE_FILES: Partial<Record<BodyId, string>> & Record<"earthCloud
   uranus: "/textures/2k_uranus.jpg",
   neptune: "/textures/2k_neptune.jpg",
   moon: "/textures/2k_moon.jpg",
-  ceres: "/textures/2k_ceres_fictional.jpg",
+  ceres: "/textures/2k_ceres.jpg",
+  pluto: "/textures/2k_pluto.jpg",
+  io: "/textures/2k_io.jpg",
+  europa: "/textures/2k_europa.jpg",
+  ganymede: "/textures/2k_ganymede.jpg",
+  callisto: "/textures/2k_callisto.jpg",
+  enceladus: "/textures/2k_enceladus.jpg",
+  titan: "/textures/2k_titan.jpg",
+  iapetus: "/textures/2k_iapetus.jpg",
+  triton: "/textures/2k_triton.jpg",
+  phobos: "/textures/2k_phobos.jpg",
+  charon: "/textures/2k_charon.jpg",
   earthClouds: "/textures/2k_earth_clouds.jpg",
   saturnRing: "/textures/2k_saturn_ring_alpha.png",
   milkyWay: "/textures/2k_stars_milky_way.jpg",

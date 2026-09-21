@@ -16,6 +16,8 @@ const ATMOSPHERE: Partial<Record<Body["id"], { color: string; intensity: number 
   neptune: { color: "#6b8dff", intensity: 0.55 },
   jupiter: { color: "#f0d9b8", intensity: 0.18 },
   saturn: { color: "#f5e6b8", intensity: 0.18 },
+  titan: { color: "#f0a640", intensity: 0.55 }, // thick nitrogen–methane haze
+  pluto: { color: "#8fb9ff", intensity: 0.3 }, // thin blue haze seen by New Horizons
 };
 
 const ATMO_VERT = /* glsl */ `
